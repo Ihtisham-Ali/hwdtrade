@@ -6,6 +6,11 @@ export async function authenticateApiKey(req: FastifyRequest, reply: FastifyRepl
   const secFetchSite = req.headers["sec-fetch-site"];
   const referer = req.headers.referer;
 
+  // Allow all public GET requests (PDF downloads, template list, static assets)
+  if (req.method === "GET" || req.url.includes("/download/")) {
+    return;
+  }
+
   // Allow web preview UI requests from the same origin
   if (secFetchSite === "same-origin" || (referer && referer.includes(req.hostname))) {
     return;
