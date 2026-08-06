@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{metadata.reportTitle}} - {{metadata.reportId}}</title>
+  <style>
+    {{{cssContent}}}
+  </style>
+</head>
+<body>
+
+  {{#if metadata.options.includeCoverPage}}
+  <!-- COVER PAGE -->
+  <div class="page cover-page">
+    {{#if coverImageUri}}
+    <div class="cover-hero-bg" style="background-image: url('{{coverImageUri}}');"></div>
+    {{/if}}
+    <div class="cover-gradient-overlay"></div>
+
+    <div class="cover-content">
+      <div class="cover-header-brand">
+        <div class="cover-brand-title">{{metadata.branding.companyName}}</div>
+        {{#if logoUri}}
+        <img src="{{logoUri}}" class="cover-logo-img" alt="Logo" />
+        {{/if}}
+      </div>
+
+      <div class="cover-main-titles">
+        <div class="cover-badge">SITE INSPECTION REPORT</div>
+        <h1 class="cover-title">{{metadata.reportTitle}}</h1>
+        <div class="cover-subtitle">{{metadata.reportType}}</div>
+
+        <div class="cover-metadata-card">
+          <div class="cover-meta-grid">
+            <div class="cover-meta-item">
+              <label>PROPERTY ADDRESS</label>
+              <span>{{metadata.property.fullAddress}}</span>
+            </div>
+            <div class="cover-meta-item">
+              <label>BUILDER</label>
+              <span>{{metadata.builder}}</span>
+            </div>
+            <div class="cover-meta-item">
+              <label>CHECK DATE</label>
+              <span>{{formattedDate}}</span>
+            </div>
+            <div class="cover-meta-item">
+              <label>SITE CHECK REFERENCE</label>
+              <span>{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}HSC1 - Check 1{{/if}}</span>
+            </div>
+            <div class="cover-meta-item">
+              <label>REPORT ID</label>
+              <span>{{metadata.reportId}}</span>
+            </div>
+            <div class="cover-meta-item">
+              <label>INSPECTOR</label>
+              <span>{{metadata.inspector.name}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-footer-bar">
+        <span>CONFIDENTIAL REPORT &bull; PREPARED FOR BUILDER / CLIENT</span>
+        <span>STATUS: {{stats.overallStatus}}</span>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
+  <!-- EXECUTIVE SUMMARY & DASHBOARD PAGE -->
+  <div class="page">
+    <div class="page-header">
+      <div class="header-brand">{{metadata.branding.companyName}} &bull; INSPECTION REPORT</div>
+      <div class="header-ref">REF: {{metadata.reportId}} | {{formattedDate}}</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-title-tag"></div>
+        INSPECTION SUMMARY & DASHBOARD
+      </div>
+    </div>
+
+    <p style="margin-bottom: 18px; color: var(--slate); font-size: 12px; line-height: 1.6;">
+      {{introductionText}}
+    </p>
+
+    <!-- METRICS DASHBOARD GRID -->
+    <div class="dashboard-grid">
+      <div class="metric-card primary">
+        <div class="metric-number">{{stats.totalChecks}}</div>
+        <div class="metric-label">TOTAL CHECKS</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-number">{{stats.completedCount}}</div>
+        <div class="metric-label">COMPLETED</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-number">{{stats.attentionCount}}</div>
+        <div class="metric-label">ATTENTION REQ.</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-number">{{stats.cannotInstallCount}}</div>
+        <div class="metric-label">CANNOT INSTALL</div>
+      </div>
+    </div>
+
+    <!-- OUTCOME BANNER -->
+    <div class="outcome-banner {{stats.overallStatusClass}}">
+      <div>
+        <div class="outcome-title">OVERALL INSPECTION OUTCOME</div>
+        <div class="outcome-status {{stats.overallStatusClass}}">{{stats.overallStatus}}</div>
+      </div>
+      <div class="outcome-action">
+        <strong>ACTION REQUIRED:</strong> {{stats.recommendedAction}}
+      </div>
+    </div>
+
+    {{#if metadata.options.includeOutstandingItems}}
+    {{#if outstandingItems.length}}
+    <!-- OUTSTANDING ITEMS SUMMARY -->
+    <div class="section-header" style="margin-top: 24px;">
+      <div class="section-title" style="color: var(--amber);">
+        <div class="section-title-tag" style="background-color: var(--amber);"></div>
+        OUTSTANDING ITEMS SUMMARY ({{outstandingItems.length}})
+      </div>
+    </div>
+
+    {{#each outstandingItems}}
+    <div class="outstanding-card">
+      <div class="outstanding-header">
+        <span class="outstanding-num">ITEM {{this.itemNumber}}</span>
+        <span class="outstanding-sec">{{this.sectionTitle}}</span>
+      </div>
+      <div class="outstanding-question">{{this.questionLabel}}</div>
+      <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+        <span class="badge {{this.status.badgeClass}}">
+          <span class="badge-icon">{{this.status.icon}}</span> {{this.status.displayLabel}}
+        </span>
+      </div>
+      <div class="outstanding-action">
+        <strong>REQUIRED ACTION:</strong> {{this.requiredAction}}
+      </div>
+    </div>
+    {{/each}}
+    {{/if}}
+    {{/if}}
+
+    <div class="page-footer">
+      <span>{{metadata.property.fullAddress}}</span>
+      <span>Report ID: {{metadata.reportId}}</span>
+    </div>
+  </div>
+
+  <!-- INSPECTION SECTIONS -->
+  <div class="page">
+    <div class="page-header">
+      <div class="header-brand">{{metadata.branding.companyName}} &bull; INSPECTION DETAILS</div>
+      <div class="header-ref">REF: {{metadata.reportId}}</div>
+    </div>
+
+    {{#each sections}}
+    <div class="report-card">
+      <div class="card-title">{{this.title}}</div>
+      {{#each this.questions}}
+      <div class="question-row {{#if this.isFullWidth}}full-width{{/if}}">
+        <div class="question-label">{{this.label}}</div>
+        <div class="question-response">
+          {{#if this.isFullWidth}}
+            <div>{{#if this.rawResponse}}{{this.rawResponse}}{{else}}None recorded.{{/if}}</div>
+          {{else}}
+            <span class="badge {{this.status.badgeClass}}">
+              <span class="badge-icon">{{this.status.icon}}</span> {{this.status.displayLabel}}
+            </span>
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/each}}
+
+    {{#if generalNotesList.length}}
+    <div class="notes-box">
+      <h3 style="font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 8px; text-transform: uppercase;">
+        GENERAL INSPECTION NOTES & COMMENTS
+      </h3>
+      <ul>
+        {{#each generalNotesList}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/if}}
+
+    <div class="page-footer">
+      <span>{{metadata.property.fullAddress}}</span>
+      <span>Report ID: {{metadata.reportId}}</span>
+    </div>
+  </div>
+
+  {{#if metadata.options.includePhotographs}}
+  {{#if galleryPages.length}}
+  <!-- PHOTOGRAPHIC EVIDENCE DIVIDER -->
+  <div class="page">
+    <div class="page-header">
+      <div class="header-brand">{{metadata.branding.companyName}} &bull; PHOTOGRAPHIC EVIDENCE</div>
+      <div class="header-ref">REF: {{metadata.reportId}}</div>
+    </div>
+
+    <div class="gallery-divider">
+      <h1>SITE PHOTOGRAPHY</h1>
+      <p>Inspection Photographic Evidence & Detailed Observations</p>
+      <div style="margin-top: 20px; font-size: 14px; color: var(--electric-blue); font-weight: 700;">
+        Total Photos Attached: {{stats.totalPhotos}}
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>{{metadata.property.fullAddress}}</span>
+      <span>Report ID: {{metadata.reportId}}</span>
+    </div>
+  </div>
+
+  <!-- GALLERY PAGES -->
+  {{#each galleryPages}}
+  <div class="page">
+    <div class="page-header">
+      <div class="header-brand">{{../metadata.branding.companyName}} &bull; PHOTOGRAPHIC EVIDENCE</div>
+      <div class="header-ref">PAGE {{this.pageNumber}} OF {{../galleryPages.length}}</div>
+    </div>
+
+    <div class="photo-grid">
+      {{#each this.photos}}
+      <div class="photo-card">
+        <div class="photo-img-container">
+          <img src="{{this.base64DataUri}}" class="photo-img" alt="Photo {{this.sequence}}" />
+        </div>
+        <div class="photo-meta">
+          <span class="photo-tag">PHOTO {{#if this.sequence}}{{this.sequence}}{{else}}--{{/if}}</span>
+          {{#if this.section}}<span class="photo-sec">{{this.section}}</span>{{/if}}
+        </div>
+        {{#if this.caption}}
+        <div class="photo-caption">
+          <strong>Caption:</strong> {{this.caption}}
+        </div>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="page-footer">
+      <span>{{../metadata.property.fullAddress}}</span>
+      <span>Report ID: {{../metadata.reportId}}</span>
+    </div>
+  </div>
+  {{/each}}
+  {{/if}}
+  {{/if}}
+
+</body>
+</html>

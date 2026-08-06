@@ -1,0 +1,17 @@
+# Render Blueprint Service Configuration
+services:
+  - type: web
+    name: hwd-trade-pdf-generator
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: singapore
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: HOST
+        value: 0.0.0.0
+      - key: API_KEY
+        value: YOUR_SECURE_API_KEY
+      - key: LOG_LEVEL
+        value: info

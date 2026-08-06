@@ -1,0 +1,239 @@
+{
+  "templateId": "lower-hebel-site-check-1",
+  "title": "Lower Hebel Installation - Site Check 1",
+  "version": "1.0.0",
+  "description": "Standard Site Check 1 inspection template for Lower Hebel Installation",
+  "sections": [
+    {
+      "id": "utilities-services",
+      "title": "Utilities & Services",
+      "questions": [
+        {
+          "id": "power-installed",
+          "label": "Is the Power Installed to the House and the Power is On?",
+          "responseKey": "powerInstalled"
+        },
+        {
+          "id": "power-marked",
+          "label": "Has the Power been marked with Spray Paint?",
+          "responseKey": "powerMarked"
+        },
+        {
+          "id": "water-installed",
+          "label": "Is the Water installed to the House and Water is Running?",
+          "responseKey": "waterInstalled"
+        },
+        {
+          "id": "bin-empty",
+          "label": "Does the Bin need to be Emptied?",
+          "responseKey": "binEmptyingRequired"
+        },
+        {
+          "id": "site-clean",
+          "label": "Is a Site Clean required?",
+          "responseKey": "siteCleanRequired"
+        }
+      ]
+    },
+    {
+      "id": "electrical-plumbing-gas",
+      "title": "Electrical Wires, Plumbing & Gas",
+      "questions": [
+        {
+          "id": "double-skin-wires",
+          "label": "Are the wires on Double Skin/Piers brought out centre?",
+          "responseKey": "doubleSkinWires"
+        },
+        {
+          "id": "wire-height",
+          "label": "Are the wires brought out at the correct height?",
+          "responseKey": "wireHeight"
+        },
+        {
+          "id": "ac-pipe",
+          "label": "Is the A/C Pipe sitting outside the Hebel or set inside the Stud Cavity?",
+          "responseKey": "airConditioningPipe"
+        },
+        {
+          "id": "gas-pipes",
+          "label": "Are the Gas pipes in the Batten/Stud Cavity?",
+          "responseKey": "gasPipes"
+        },
+        {
+          "id": "water-pipes",
+          "label": "Are the Water pipes set in the Batten/Stud Cavity?",
+          "responseKey": "waterPipes"
+        }
+      ]
+    },
+    {
+      "id": "sarking-windows-doors-fascia",
+      "title": "Wall Wrap, Sarking, Windows, Doors & Fascia",
+      "questions": [
+        {
+          "id": "sarking-installed",
+          "label": "Is the Sarking 100% Installed?",
+          "responseKey": "sarkingInstalled"
+        },
+        {
+          "id": "windows-installed",
+          "label": "Are the Windows Installed?",
+          "responseKey": "windowsInstalled"
+        },
+        {
+          "id": "window-reveals",
+          "label": "Are the Window Reveals Correct?",
+          "responseKey": "windowReveals"
+        },
+        {
+          "id": "doors-installed",
+          "label": "Are the Doors Installed?",
+          "responseKey": "doorsInstalled"
+        },
+        {
+          "id": "door-jamb-reveals",
+          "label": "Are the Door Jamb Reveals Correct?",
+          "responseKey": "doorJambReveals"
+        },
+        {
+          "id": "sliders-installed",
+          "label": "Are the Sliders Installed?",
+          "responseKey": "slidersInstalled"
+        },
+        {
+          "id": "garage-door-jamb",
+          "label": "Is the Garage Door Jamb Installed?",
+          "responseKey": "garageDoorJamb"
+        },
+        {
+          "id": "garage-jamb-width",
+          "label": "Is the Garage Door Jamb Width Correct?",
+          "responseKey": "garageDoorJambWidth"
+        },
+        {
+          "id": "garage-head",
+          "label": "Is the Garage Head Correct?",
+          "responseKey": "garageHead"
+        },
+        {
+          "id": "garage-head-notes",
+          "label": "Garage Head Notes",
+          "responseKey": "garageHeadNotes",
+          "type": "notes",
+          "isFullWidth": true
+        },
+        {
+          "id": "frame-to-fascia",
+          "label": "Is the Frame to Fascia Correct for the Batten and Hebel to get behind?",
+          "responseKey": "frameToFacia"
+        }
+      ]
+    },
+    {
+      "id": "scaffold-zero-boundary",
+      "title": "Edge Protection, Scaffold & Zero Boundary",
+      "questions": [
+        {
+          "id": "edge-protection",
+          "label": "Has the Edge Protection been removed?",
+          "responseKey": "edgeProtectionRemoved"
+        },
+        {
+          "id": "scaffold-removal",
+          "label": "Is there any Scaffold needing to be removed?",
+          "responseKey": "scaffoldRemoval"
+        },
+        {
+          "id": "zero-boundary",
+          "label": "Can the Zero Boundary be installed?",
+          "responseKey": "zeroBoundaryInstallation"
+        },
+        {
+          "id": "zero-boundary-notes",
+          "label": "Zero Boundary Notes",
+          "responseKey": "zeroBoundaryNotes",
+          "type": "notes",
+          "isFullWidth": true
+        }
+      ]
+    },
+    {
+      "id": "framing",
+      "title": "Framing",
+      "questions": [
+        {
+          "id": "frame-check",
+          "label": "Frame Check",
+          "responseKey": "frameCheck"
+        },
+        {
+          "id": "pier-framing",
+          "label": "Are there piers that require framing?",
+          "responseKey": "pierFraming"
+        },
+        {
+          "id": "additional-framing",
+          "label": "Is more framing required?",
+          "responseKey": "additionalFraming"
+        },
+        {
+          "id": "framing-notes",
+          "label": "Framing Notes",
+          "responseKey": "framingNotes",
+          "type": "notes",
+          "isFullWidth": true
+        }
+      ]
+    },
+    {
+      "id": "slab-rebate",
+      "title": "Slab Rebate",
+      "questions": [
+        {
+          "id": "slab-rebate-check",
+          "label": "Is the Slab Rebate/Step Down Correct?",
+          "responseKey": "slabRebate"
+        }
+      ]
+    },
+    {
+      "id": "soil-height",
+      "title": "Soil Height",
+      "questions": [
+        {
+          "id": "soil-height-check",
+          "label": "Is the Soil Height Correct?",
+          "responseKey": "soilHeight"
+        },
+        {
+          "id": "soil-height-notes",
+          "label": "Soil Height Notes",
+          "responseKey": "soilHeightNotes",
+          "type": "notes",
+          "isFullWidth": true
+        }
+      ]
+    },
+    {
+      "id": "termite-barrier",
+      "title": "Termite Barrier",
+      "questions": [
+        {
+          "id": "termite-pier-slab",
+          "label": "Is there Termite Barrier needed for the Pier on Slab?",
+          "responseKey": "termiteBarrierPierSlab"
+        },
+        {
+          "id": "termite-pier-footing",
+          "label": "Is there Termite Barrier needed for the Pier Base on Footing?",
+          "responseKey": "termiteBarrierPierFooting"
+        },
+        {
+          "id": "termite-ordered",
+          "label": "Has the Termite Barrier been ordered?",
+          "responseKey": "termiteBarrierOrdered"
+        }
+      ]
+    }
+  ]
+}
