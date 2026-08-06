@@ -9,6 +9,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
+# Ensure matching Playwright Chromium browser is installed inside container
+RUN npx playwright install chromium
+
 # Copy application source
 COPY . .
 
