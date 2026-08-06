@@ -457,6 +457,9 @@
 
         const res = await fetch("/api/v1/inspection-reports/generate", {
           method: "POST",
+          headers: {
+            "Authorization": "Bearer YOUR_SECURE_API_KEY"
+          },
           body: formData
         });
 

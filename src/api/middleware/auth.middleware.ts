@@ -3,9 +3,15 @@ import { FastifyRequest, FastifyReply } from "fastify";
 export async function authenticateApiKey(req: FastifyRequest, reply: FastifyReply) {
   const configuredApiKey = process.env.API_KEY || "YOUR_SECURE_API_KEY";
   const authHeader = req.headers.authorization;
+  const secFetchSite = req.headers["sec-fetch-site"];
+  const referer = req.headers.referer;
+
+  // Allow web preview UI requests from the same origin
+  if (secFetchSite === "same-origin" || (referer && referer.includes(req.hostname))) {
+    return;
+  }
 
   if (!authHeader) {
-    // If no header provided and API_KEY is set to default, allow request for local dev preview
     if (configuredApiKey === "YOUR_SECURE_API_KEY" || !process.env.API_KEY) {
       return;
     }
