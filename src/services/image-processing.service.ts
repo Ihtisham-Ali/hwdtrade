@@ -91,8 +91,12 @@ export class ImageProcessingService {
       const meta = imageMetadataMap.get(file.originalFileName) || imageMetadataMap.get(file.originalFileName.toLowerCase());
       const sequence = meta?.sequence || i + 1;
 
-      const result = await this.processSingleImage(file, sequence, preset, meta);
-      processed.push(result);
+      try {
+        const result = await this.processSingleImage(file, sequence, preset, meta);
+        processed.push(result);
+      } catch (err: any) {
+        console.warn(`[ImageProcessingService] Skipping file '${file.originalFileName}': ${err.message}`);
+      }
     }
 
     // Sort by sequence

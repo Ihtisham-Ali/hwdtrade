@@ -44,6 +44,14 @@ export const SourceMetadataSchema = z.object({
   itemId: z.string().optional(),
 });
 
+export const Base64ImageSchema = z.object({
+  fileName: z.string().optional(),
+  base64: z.string(),
+  caption: z.string().optional(),
+  section: z.string().optional(),
+  sequence: z.number().optional(),
+});
+
 export const InspectionMetadataSchema = z.object({
   reportId: z.string().optional().default(() => `RPT-${Date.now()}`),
   templateId: z.string().optional().default("lower-hebel-site-check-1"),
@@ -55,7 +63,7 @@ export const InspectionMetadataSchema = z.object({
   property: PropertySchema,
   inspector: InspectorSchema.optional().default({ name: "Site Inspector", company: "Inspection Services" }),
   branding: BrandingSchema.optional().default({
-    companyName: "Site Inspection Co.",
+    companyName: "HWD Trade",
     primaryColour: "#0F172A",
     accentColour: "#00AEEF",
     secondaryColour: "#14B8A6"
@@ -63,6 +71,7 @@ export const InspectionMetadataSchema = z.object({
   responses: z.record(z.string(), z.string()).optional().default({}),
   generalNotes: z.union([z.array(z.string()), z.string()]).optional().default([]),
   imageMetadata: z.array(ImageMetadataSchema).optional().default([]),
+  base64Images: z.array(Base64ImageSchema).optional().default([]),
   options: InspectionOptionsSchema.optional().default({
     includeCoverPage: true,
     includeSummary: true,
