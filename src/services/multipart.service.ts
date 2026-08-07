@@ -22,43 +22,63 @@ export class MultipartService {
       const rawMeta = body.metadata ? (typeof body.metadata === "string" ? JSON.parse(body.metadata) : body.metadata) : body;
       metadata = InspectionMetadataSchema.parse(rawMeta);
 
-      // Extract base64Images if present
-      const rawB64Type = typeof metadata.base64Images;
-      console.log(`[DEBUG] base64Images raw type: ${rawB64Type}, isArray: ${Array.isArray(metadata.base64Images)}`);
-      if (rawB64Type === "string") {
-        const rawStr = metadata.base64Images as string;
-        console.log(`[DEBUG] base64Images string length: ${rawStr.length}, starts with: ${rawStr.substring(0, 120)}`);
+      // Extract base64Images — handle Make.com Array Aggregator concatenated JSON
+      if (typeof metadata.base64Images === "string") {
+        const rawStr = (metadata.base64Images as string).trim();
+        console.log(`[ImageExtract] base64Images is string, length=${rawStr.length}, preview=${rawStr.substring(0, 100)}`);
+
+        // Try standard JSON.parse first
+        let parsed: any = null;
         try {
-          metadata.base64Images = JSON.parse(rawStr);
-          console.log(`[DEBUG] After JSON.parse: type=${typeof metadata.base64Images}, isArray=${Array.isArray(metadata.base64Images)}, keys=${typeof metadata.base64Images === "object" ? Object.keys(metadata.base64Images as any) : "N/A"}`);
-        } catch (e: any) {
-          console.log(`[DEBUG] JSON.parse failed: ${e.message}`);
+          parsed = JSON.parse(rawStr);
+        } catch (e) {
+          // Make.com Array Aggregator concatenates JSON objects without separators:
+          // {"field":{...}}{"field":{...}}{"field":{...}}
+          // Split at }{ boundaries (only occurs between top-level concatenated objects,
+          // never within a single valid JSON object since sibling values use commas)
+          if (rawStr.includes("}{")) {
+            console.log(`[ImageExtract] Detected concatenated JSON objects, splitting...`);
+            const parts = rawStr.split(/\}\s*\{/);
+            const objectArray: any[] = [];
+            for (let i = 0; i < parts.length; i++) {
+              let chunk = parts[i];
+              if (i > 0) chunk = "{" + chunk;           // re-add opening brace removed by split
+              if (i < parts.length - 1) chunk = chunk + "}"; // re-add closing brace removed by split
+              try {
+                objectArray.push(JSON.parse(chunk));
+              } catch (e2) {
+                console.warn(`[ImageExtract] Failed to parse chunk ${i} (length=${chunk.length})`);
+              }
+            }
+            console.log(`[ImageExtract] Parsed ${objectArray.length} image objects from concatenated JSON`);
+            parsed = objectArray;
+          }
+        }
+
+        if (parsed !== null) {
+          metadata.base64Images = parsed;
         }
       }
 
-      // Normalize base64Images to an array if it's a single object or string
+      // Normalize base64Images to an array
       let rawImageItems: any[] = [];
       if (Array.isArray(metadata.base64Images)) {
         rawImageItems = metadata.base64Images;
-      } else if (metadata.base64Images) {
+      } else if (metadata.base64Images && typeof metadata.base64Images !== "string") {
         rawImageItems = [metadata.base64Images];
       }
-      console.log(`[DEBUG] rawImageItems count: ${rawImageItems.length}`);
+      console.log(`[ImageExtract] Processing ${rawImageItems.length} image items`);
 
-      if (rawImageItems.length > 0) {
-        for (let i = 0; i < rawImageItems.length; i++) {
-          const item = rawImageItems[i];
-          console.log(`[DEBUG] Item ${i}: type=${typeof item}, isArray=${Array.isArray(item)}, keys=${typeof item === "object" && item ? Object.keys(item) : "N/A"}`);
-          const extracted = MultipartService.extractImageFromItem(item, i);
-          if (extracted) {
-            const buf = extracted.filePart.buffer;
-            console.log(`[DEBUG] Extracted image ${i}: buffer.length=${buf.length}, first20hex=${buf.subarray(0, 20).toString("hex")}, isJPEG=${buf[0]===0xFF && buf[1]===0xD8}`);
-            images.push(extracted.filePart);
-            if (!metadata.imageMetadata) metadata.imageMetadata = [];
-            metadata.imageMetadata.push(extracted.meta);
-          } else {
-            console.log(`[DEBUG] extractImageFromItem returned null for item ${i}`);
-          }
+      for (let i = 0; i < rawImageItems.length; i++) {
+        const item = rawImageItems[i];
+        const extracted = MultipartService.extractImageFromItem(item, i);
+        if (extracted) {
+          const buf = extracted.filePart.buffer;
+          const isJpeg = buf.length > 2 && buf[0] === 0xFF && buf[1] === 0xD8;
+          console.log(`[ImageExtract] Image ${i}: ${buf.length} bytes, JPEG=${isJpeg}, hex=${buf.subarray(0, 8).toString("hex")}`);
+          images.push(extracted.filePart);
+          if (!metadata.imageMetadata) metadata.imageMetadata = [];
+          metadata.imageMetadata.push(extracted.meta);
         }
       }
 
