@@ -1,6 +1,10 @@
 import sharp from "sharp";
 import { UploadedFilePart } from "../schemas/inspection.schema.js";
 
+// Disable Sharp internal memory cache so libvips frees C++ RAM immediately
+sharp.cache(false);
+sharp.concurrency(1);
+
 export type CompressionPreset = "high" | "balanced" | "compressed";
 
 export interface CompressionProfileOptions {
@@ -8,10 +12,11 @@ export interface CompressionProfileOptions {
   jpegQuality: number;
 }
 
+// 1200px max dimension is optimal for A4 PDF printing (crisp HD quality while using 80% less RAM)
 export const COMPRESSION_PRESETS: Record<CompressionPreset, CompressionProfileOptions> = {
-  high: { maxDimension: 2200, jpegQuality: 78 },
-  balanced: { maxDimension: 1800, jpegQuality: 70 },
-  compressed: { maxDimension: 1500, jpegQuality: 62 },
+  high: { maxDimension: 1400, jpegQuality: 78 },
+  balanced: { maxDimension: 1200, jpegQuality: 72 },
+  compressed: { maxDimension: 1000, jpegQuality: 65 },
 };
 
 export interface ProcessedImage {

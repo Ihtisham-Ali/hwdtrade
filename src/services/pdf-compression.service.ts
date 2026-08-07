@@ -24,7 +24,7 @@ export class PdfCompressionService {
     const maxPdfSizeMb = metadata.options?.maximumPdfSizeMb || 20;
     const maxPdfSizeBytes = maxPdfSizeMb * 1024 * 1024;
 
-    const passes: CompressionPreset[] = ["high", "balanced", "compressed"];
+    const passes: CompressionPreset[] = ["balanced", "compressed"];
     const warnings: Array<{ code: string; message: string }> = [];
 
     // Map image metadata by file name

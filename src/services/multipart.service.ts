@@ -1,4 +1,5 @@
 import { FastifyRequest } from "fastify";
+import sharp from "sharp";
 import { InspectionMetadata, InspectionMetadataSchema, UploadedFilePart } from "../schemas/inspection.schema.js";
 
 export interface ParsedMultipartRequest {
@@ -392,8 +393,20 @@ export class MultipartService {
       }
 
       const arrayBuf = await res.arrayBuffer();
-      const buf = Buffer.from(arrayBuf);
-      if (buf.length > 10) return buf;
+      const rawBuf = Buffer.from(arrayBuf);
+      if (rawBuf.length <= 10) return null;
+
+      // Immediately compress raw downloaded photo to 1200px HD JPEG using Sharp to save 85% RAM
+      try {
+        const compressed = await sharp(rawBuf)
+          .rotate()
+          .resize({ width: 1200, height: 1200, fit: "inside", withoutEnlargement: true })
+          .jpeg({ quality: 75, mozjpeg: true })
+          .toBuffer();
+        return compressed;
+      } catch (e) {
+        return rawBuf;
+      }
     } catch (err: any) {
       console.warn(`[UrlDownloader] Failed to fetch image from ${urlStr}: ${err.message}`);
     }
