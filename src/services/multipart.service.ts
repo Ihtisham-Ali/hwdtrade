@@ -31,14 +31,18 @@ export class MultipartService {
         let parsed: any = null;
         try {
           parsed = JSON.parse(rawStr);
-        } catch (e) {
+          console.log(`[ImageExtract] JSON.parse succeeded, type=${typeof parsed}, isArray=${Array.isArray(parsed)}`);
+        } catch (e: any) {
+          console.log(`[ImageExtract] JSON.parse failed: ${e.message}`);
+
           // Make.com Array Aggregator concatenates JSON objects without separators:
           // {"field":{...}}{"field":{...}}{"field":{...}}
-          // Split at }{ boundaries (only occurs between top-level concatenated objects,
-          // never within a single valid JSON object since sibling values use commas)
-          if (rawStr.includes("}{")) {
+          // They may have whitespace between them: }}} {"field":...}
+          // Use regex to detect the boundary pattern (} followed by optional whitespace then {)
+          if (rawStr.startsWith("{") && /\}\s*\{/.test(rawStr)) {
             console.log(`[ImageExtract] Detected concatenated JSON objects, splitting...`);
             const parts = rawStr.split(/\}\s*\{/);
+            console.log(`[ImageExtract] Split into ${parts.length} parts`);
             const objectArray: any[] = [];
             for (let i = 0; i < parts.length; i++) {
               let chunk = parts[i];
@@ -46,12 +50,45 @@ export class MultipartService {
               if (i < parts.length - 1) chunk = chunk + "}"; // re-add closing brace removed by split
               try {
                 objectArray.push(JSON.parse(chunk));
-              } catch (e2) {
-                console.warn(`[ImageExtract] Failed to parse chunk ${i} (length=${chunk.length})`);
+              } catch (e2: any) {
+                console.warn(`[ImageExtract] Failed to parse chunk ${i} (length=${chunk.length}): ${e2.message}`);
               }
             }
             console.log(`[ImageExtract] Parsed ${objectArray.length} image objects from concatenated JSON`);
             parsed = objectArray;
+          } else {
+            console.log(`[ImageExtract] Not concatenated JSON. startsWith={: ${rawStr.startsWith("{")}, has boundary: ${/\}\s*\{/.test(rawStr)}`);
+            // Last resort: check if position info available, try to slice at that position
+            const posMatch = e.message.match(/position\s+(\d+)/i);
+            if (posMatch) {
+              const pos = parseInt(posMatch[1]);
+              console.log(`[ImageExtract] Attempting slice at error position ${pos}`);
+              const objectArray: any[] = [];
+              let remaining = rawStr;
+              while (remaining.length > 0) {
+                remaining = remaining.trim();
+                if (!remaining.startsWith("{")) break;
+                try {
+                  const obj = JSON.parse(remaining);
+                  objectArray.push(obj);
+                  break;
+                } catch (sliceErr: any) {
+                  const sliceMatch = sliceErr.message.match(/position\s+(\d+)/i);
+                  if (!sliceMatch) break;
+                  const slicePos = parseInt(sliceMatch[1]);
+                  if (slicePos <= 0) break;
+                  const chunk = remaining.substring(0, slicePos);
+                  try {
+                    objectArray.push(JSON.parse(chunk));
+                  } catch (e3) { break; }
+                  remaining = remaining.substring(slicePos);
+                }
+              }
+              if (objectArray.length > 0) {
+                console.log(`[ImageExtract] Position-based parsing found ${objectArray.length} objects`);
+                parsed = objectArray;
+              }
+            }
           }
         }
 
