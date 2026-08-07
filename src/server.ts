@@ -13,6 +13,7 @@ const PORT = parseInt(process.env.PORT || "3000", 10);
 const HOST = process.env.HOST || "0.0.0.0";
 
 const fastify = Fastify({
+  bodyLimit: 150 * 1024 * 1024, // 150 MB limit for large JSON base64 payloads
   logger: {
     level: process.env.LOG_LEVEL || "info",
   },
@@ -25,9 +26,9 @@ async function startServer() {
 
     await fastify.register(multipart, {
       limits: {
-        fileSize: 15 * 1024 * 1024, // 15 MB per file
-        fieldSize: 50 * 1024 * 1024, // 50 MB total fields
-        files: 50, // Max 50 image files
+        fileSize: 30 * 1024 * 1024, // 30 MB per file
+        fieldSize: 150 * 1024 * 1024, // 150 MB total fields
+        files: 100, // Max 100 image files
       },
     });
 
