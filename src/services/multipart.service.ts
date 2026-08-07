@@ -123,43 +123,56 @@ export class MultipartService {
 
   public static extractImageFromItem(item: any, index: number): { filePart: UploadedFilePart; meta: { fileName: string; caption?: string; section?: string; sequence?: number } } | null {
     if (!item) return null;
-    let str: string | undefined = undefined;
     let fileName = `photo-${index + 1}.jpg`;
     let caption: string | undefined = undefined;
     let section: string | undefined = undefined;
     let sequence: number | undefined = index + 1;
+    let rawTarget: any = item;
 
-    if (typeof item === "string") {
-      str = item;
-    } else if (typeof item === "object") {
-      str = item.base64 || item.data || item.file?.data || item.field?.data;
+    if (typeof item === "object") {
       fileName = item.fileName || item.file?.fileName || item.field?.fileName || fileName;
       caption = item.caption || item.field?.caption;
       section = item.section || item.field?.section;
       sequence = item.sequence || item.field?.sequence || sequence;
+
+      if (item.field) rawTarget = item.field.data || item.field.base64 || item.field;
+      else if (item.file) rawTarget = item.file.data || item.file.base64 || item.file;
+      else if (item.base64) rawTarget = item.base64;
+      else if (item.data) rawTarget = item.data;
     }
 
-    if (!str || typeof str !== "string") return null;
+    let buffer: Buffer | null = null;
 
-    // Handle Make.com IMTBuffer representation: "IMTBuffer(...): ffd8ffe0..."
-    if (str.includes("IMTBuffer")) {
-      const colonIdx = str.lastIndexOf(":");
-      if (colonIdx !== -1) {
-        str = str.substring(colonIdx + 1).trim();
+    // 1. Direct Buffer instance
+    if (Buffer.isBuffer(rawTarget)) {
+      buffer = rawTarget;
+    }
+    // 2. Node.js serialized Buffer object: { type: "Buffer", data: [255, 216, 255, ...] }
+    else if (rawTarget && typeof rawTarget === "object" && Array.isArray(rawTarget.data)) {
+      buffer = Buffer.from(rawTarget.data);
+    }
+    // 3. Raw array of byte numbers: [255, 216, 255, ...]
+    else if (Array.isArray(rawTarget)) {
+      buffer = Buffer.from(rawTarget);
+    }
+    // 4. String format (Hex, Base64, IMTBuffer, or stringified JSON object)
+    else if (typeof rawTarget === "string") {
+      let str = rawTarget;
+      if (str.includes("IMTBuffer")) {
+        const colonIdx = str.lastIndexOf(":");
+        if (colonIdx !== -1) {
+          str = str.substring(colonIdx + 1).trim();
+        }
+      }
+      const cleanStr = str.replace(/^data:image\/\w+;base64,/, "").trim();
+      if (/^[0-9a-fA-F]+$/.test(cleanStr) && cleanStr.length % 2 === 0) {
+        buffer = Buffer.from(cleanStr, "hex");
+      } else {
+        buffer = Buffer.from(cleanStr, "base64");
       }
     }
 
-    let buffer: Buffer;
-
-    // Check if string is Hex encoded (Make.com IMTBuffer output)
-    const cleanStr = str.replace(/^data:image\/\w+;base64,/, "").trim();
-    if (/^[0-9a-fA-F]+$/.test(cleanStr) && cleanStr.length % 2 === 0) {
-      buffer = Buffer.from(cleanStr, "hex");
-    } else {
-      buffer = Buffer.from(cleanStr, "base64");
-    }
-
-    if (buffer.length === 0) return null;
+    if (!buffer || buffer.length === 0) return null;
 
     return {
       filePart: {
