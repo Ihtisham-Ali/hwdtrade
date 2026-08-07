@@ -122,16 +122,31 @@ export class MultipartService {
     } else if (typeof item === "object") {
       str = item.base64 || item.data || item.file?.data || item.field?.data;
       fileName = item.fileName || item.file?.fileName || item.field?.fileName || fileName;
-      caption = item.caption;
-      section = item.section;
-      sequence = item.sequence || sequence;
+      caption = item.caption || item.field?.caption;
+      section = item.section || item.field?.section;
+      sequence = item.sequence || item.field?.sequence || sequence;
     }
 
     if (!str || typeof str !== "string") return null;
-    const cleanStr = str.replace(/^data:image\/\w+;base64,/, "").trim();
-    if (cleanStr.length === 0) return null;
 
-    const buffer = Buffer.from(cleanStr, "base64");
+    // Handle Make.com IMTBuffer representation: "IMTBuffer(...): ffd8ffe0..."
+    if (str.includes("IMTBuffer")) {
+      const colonIdx = str.lastIndexOf(":");
+      if (colonIdx !== -1) {
+        str = str.substring(colonIdx + 1).trim();
+      }
+    }
+
+    let buffer: Buffer;
+
+    // Check if string is Hex encoded (Make.com IMTBuffer output)
+    const cleanStr = str.replace(/^data:image\/\w+;base64,/, "").trim();
+    if (/^[0-9a-fA-F]+$/.test(cleanStr) && cleanStr.length % 2 === 0) {
+      buffer = Buffer.from(cleanStr, "hex");
+    } else {
+      buffer = Buffer.from(cleanStr, "base64");
+    }
+
     if (buffer.length === 0) return null;
 
     return {
