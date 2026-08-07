@@ -55,7 +55,7 @@ export class MultipartService {
             if (typeof item === "string") {
               urlStr = item;
             } else if (typeof item === "object" && item !== null) {
-              urlStr = item.url || item.public_url || item.download_url;
+              urlStr = item.url || item.public_url || item.download_url || item.value || item.val;
               caption = item.caption;
               section = item.section;
               fileName = item.fileName || fileName;
