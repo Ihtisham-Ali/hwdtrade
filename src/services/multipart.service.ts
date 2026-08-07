@@ -29,9 +29,17 @@ export class MultipartService {
         } catch (e) {}
       }
 
-      if (Array.isArray(metadata.base64Images) && metadata.base64Images.length > 0) {
-        for (let i = 0; i < metadata.base64Images.length; i++) {
-          const item = metadata.base64Images[i];
+      // Normalize base64Images to an array if it's a single object or string
+      let rawImageItems: any[] = [];
+      if (Array.isArray(metadata.base64Images)) {
+        rawImageItems = metadata.base64Images;
+      } else if (metadata.base64Images) {
+        rawImageItems = [metadata.base64Images];
+      }
+
+      if (rawImageItems.length > 0) {
+        for (let i = 0; i < rawImageItems.length; i++) {
+          const item = rawImageItems[i];
           const extracted = MultipartService.extractImageFromItem(item, i);
           if (extracted) {
             images.push(extracted.filePart);
