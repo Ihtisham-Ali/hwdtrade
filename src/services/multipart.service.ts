@@ -22,104 +22,163 @@ export class MultipartService {
       const rawMeta = body.metadata ? (typeof body.metadata === "string" ? JSON.parse(body.metadata) : body.metadata) : body;
       metadata = InspectionMetadataSchema.parse(rawMeta);
 
-      // Extract base64Images — handle Make.com Array Aggregator output
+      // 1. Extract images from imageUrls if provided (RECOMMENDED, LIGHTWEIGHT & SCALABLE!)
+      if (metadata.imageUrls) {
+        let urlList: any[] = [];
+        if (typeof metadata.imageUrls === "string") {
+          const rawStr = metadata.imageUrls.trim();
+          if (rawStr.startsWith("[") || rawStr.startsWith("{")) {
+            try {
+              const parsed = JSON.parse(rawStr);
+              urlList = Array.isArray(parsed) ? parsed : [parsed];
+            } catch (e) {
+              urlList = rawStr.split(",").map(u => u.trim());
+            }
+          } else {
+            urlList = rawStr.split(",").map(u => u.trim());
+          }
+        } else if (Array.isArray(metadata.imageUrls)) {
+          urlList = metadata.imageUrls;
+        } else if (metadata.imageUrls) {
+          urlList = [metadata.imageUrls];
+        }
+
+        if (urlList.length > 0) {
+          console.log(`[UrlExtract] Downloading ${urlList.length} images from imageUrls...`);
+          for (let i = 0; i < urlList.length; i++) {
+            const item = urlList[i];
+            let urlStr: string | undefined = undefined;
+            let caption: string | undefined = undefined;
+            let section: string | undefined = undefined;
+            let fileName = `photo-${images.length + 1}.jpg`;
+
+            if (typeof item === "string") {
+              urlStr = item;
+            } else if (typeof item === "object" && item !== null) {
+              urlStr = item.url || item.public_url || item.download_url;
+              caption = item.caption;
+              section = item.section;
+              fileName = item.fileName || fileName;
+            }
+
+            if (urlStr && typeof urlStr === "string" && urlStr.trim().startsWith("http")) {
+              const buf = await MultipartService.downloadImageFromUrl(urlStr);
+              if (buf) {
+                images.push({
+                  originalFileName: fileName,
+                  mimeType: "image/jpeg",
+                  buffer: buf,
+                  field: "images"
+                });
+                if (!metadata.imageMetadata) metadata.imageMetadata = [];
+                metadata.imageMetadata.push({
+                  fileName,
+                  caption,
+                  section,
+                  sequence: images.length
+                });
+                console.log(`[UrlExtract] Downloaded photo ${images.length} (${buf.length} bytes) from URL`);
+              }
+            }
+          }
+        }
+      }
+
+      // 2. Extract base64Images fallback if present
+      // Strategy: parse each image object ONE AT A TIME, immediately convert to Buffer,
+      // and discard the parsed JSON to avoid accumulating all byte arrays in memory.
       if (typeof metadata.base64Images === "string") {
         const rawStr = (metadata.base64Images as string).trim();
         console.log(`[ImageExtract] base64Images is string, length=${rawStr.length}`);
 
-        let parsed: any = null;
-
         // Try standard JSON.parse first (works for single objects or valid arrays)
+        let directParsed: any = null;
         try {
-          parsed = JSON.parse(rawStr);
-          console.log(`[ImageExtract] JSON.parse OK, type=${typeof parsed}, isArray=${Array.isArray(parsed)}`);
+          directParsed = JSON.parse(rawStr);
+          console.log(`[ImageExtract] JSON.parse OK, type=${typeof directParsed}, isArray=${Array.isArray(directParsed)}`);
         } catch (e: any) {
           // JSON.parse failed — multiple objects concatenated by Make.com
+          // Separator is typically ", " (comma+space) between objects
           const posMatch = e.message.match(/position\s+(\d+)/i);
           const errorPos = posMatch ? parseInt(posMatch[1]) : -1;
-          
-          // Log the boundary character to understand separator
+
           if (errorPos > 0 && errorPos < rawStr.length) {
-            const boundaryPreview = rawStr.substring(Math.max(0, errorPos - 3), Math.min(rawStr.length, errorPos + 30));
-            console.log(`[ImageExtract] JSON.parse failed at pos ${errorPos}, boundary: "${boundaryPreview}"`);
+            const bp = rawStr.substring(Math.max(0, errorPos - 3), Math.min(rawStr.length, errorPos + 30));
+            console.log(`[ImageExtract] Boundary at pos ${errorPos}: "${bp}"`);
           }
 
-          // Strategy: iteratively parse objects by slicing at JSON.parse error positions
-          // This handles ANY separator between objects (comma, space, nothing, etc.)
+          // Parse objects one-by-one, immediately extract Buffer, discard JSON to save memory
           if (errorPos > 0) {
-            console.log(`[ImageExtract] Parsing concatenated objects using position-based slicing...`);
-            const objectArray: any[] = [];
+            console.log(`[ImageExtract] Streaming parse: extracting images one at a time...`);
             let remaining = rawStr;
+            let imgIdx = 0;
             let iterations = 0;
-            const MAX_ITERATIONS = 100; // safety limit
 
-            while (remaining.length > 0 && iterations < MAX_ITERATIONS) {
+            while (remaining.length > 0 && iterations < 100) {
               iterations++;
-              // Skip any non-JSON characters (commas, whitespace, etc.) to find next '{'
+              // Skip separator characters (commas, whitespace) to find next '{'
               const nextBrace = remaining.indexOf("{");
               if (nextBrace === -1) break;
-              if (nextBrace > 0) {
-                remaining = remaining.substring(nextBrace);
-              }
+              if (nextBrace > 0) remaining = remaining.substring(nextBrace);
+
+              let parsedObj: any = null;
+              let consumed = remaining.length;
 
               try {
-                // Try parsing the entire remaining string
-                const obj = JSON.parse(remaining);
-                objectArray.push(obj);
-                break; // Successfully parsed the rest — done
+                parsedObj = JSON.parse(remaining);
+                // Successfully parsed entire remaining — this is the last object
               } catch (sliceErr: any) {
-                // Parse failed — extract position of next boundary
-                const sliceMatch = sliceErr.message.match(/position\s+(\d+)/i);
-                if (!sliceMatch) break;
-                const slicePos = parseInt(sliceMatch[1]);
-                if (slicePos <= 0) break;
-
-                // Extract the valid JSON chunk before the boundary
-                const chunk = remaining.substring(0, slicePos);
+                const sm = sliceErr.message.match(/position\s+(\d+)/i);
+                if (!sm) break;
+                consumed = parseInt(sm[1]);
+                if (consumed <= 0) break;
                 try {
-                  objectArray.push(JSON.parse(chunk));
+                  parsedObj = JSON.parse(remaining.substring(0, consumed));
                 } catch (e3) {
-                  console.warn(`[ImageExtract] Could not parse chunk at iteration ${iterations} (length=${chunk.length})`);
-                  // Skip past this position and try to find next object
+                  // Skip this chunk
+                  remaining = remaining.substring(consumed);
+                  continue;
                 }
-                remaining = remaining.substring(slicePos);
               }
+
+              if (parsedObj) {
+                // IMMEDIATELY convert to Buffer — frees the huge JS number array
+                const extracted = MultipartService.extractImageFromItem(parsedObj, imgIdx);
+                parsedObj = null; // Help GC reclaim the big byte array
+                if (extracted) {
+                  const buf = extracted.filePart.buffer;
+                  const isJpeg = buf.length > 2 && buf[0] === 0xFF && buf[1] === 0xD8;
+                  console.log(`[ImageExtract] Image ${imgIdx}: ${buf.length} bytes, JPEG=${isJpeg}`);
+                  images.push(extracted.filePart);
+                  if (!metadata.imageMetadata) metadata.imageMetadata = [];
+                  metadata.imageMetadata.push(extracted.meta);
+                }
+                imgIdx++;
+              }
+
+              if (consumed >= remaining.length) break;
+              remaining = remaining.substring(consumed);
             }
 
-            if (objectArray.length > 0) {
-              console.log(`[ImageExtract] Parsed ${objectArray.length} image objects`);
-              parsed = objectArray;
-            }
+            console.log(`[ImageExtract] Extracted ${images.length} images total`);
           }
         }
 
-        if (parsed !== null) {
-          metadata.base64Images = parsed;
+        // If direct JSON.parse succeeded, process normally
+        if (directParsed !== null) {
+          let items: any[] = Array.isArray(directParsed) ? directParsed : [directParsed];
+          for (let i = 0; i < items.length; i++) {
+            const extracted = MultipartService.extractImageFromItem(items[i], i);
+            if (extracted) {
+              images.push(extracted.filePart);
+              if (!metadata.imageMetadata) metadata.imageMetadata = [];
+              metadata.imageMetadata.push(extracted.meta);
+            }
+          }
         }
       }
 
-      // Normalize base64Images to an array
-      let rawImageItems: any[] = [];
-      if (Array.isArray(metadata.base64Images)) {
-        rawImageItems = metadata.base64Images;
-      } else if (metadata.base64Images && typeof metadata.base64Images !== "string") {
-        rawImageItems = [metadata.base64Images];
-      }
-      console.log(`[ImageExtract] Processing ${rawImageItems.length} image items`);
-
-      for (let i = 0; i < rawImageItems.length; i++) {
-        const item = rawImageItems[i];
-        const extracted = MultipartService.extractImageFromItem(item, i);
-        if (extracted) {
-          const buf = extracted.filePart.buffer;
-          const isJpeg = buf.length > 2 && buf[0] === 0xFF && buf[1] === 0xD8;
-          console.log(`[ImageExtract] Image ${i}: ${buf.length} bytes, JPEG=${isJpeg}, hex=${buf.subarray(0, 8).toString("hex")}`);
-          images.push(extracted.filePart);
-          if (!metadata.imageMetadata) metadata.imageMetadata = [];
-          metadata.imageMetadata.push(extracted.meta);
-        }
-      }
-
+      console.log(`[ImageExtract] Total images: ${images.length}`);
       return { metadata, images, logo, coverImage };
     }
 
@@ -314,5 +373,30 @@ export class MultipartService {
         sequence,
       },
     };
+  }
+
+  public static async downloadImageFromUrl(urlStr: string): Promise<Buffer | null> {
+    try {
+      const cleanUrl = urlStr.trim();
+      if (!cleanUrl.startsWith("http")) return null;
+
+      const res = await fetch(cleanUrl, {
+        headers: {
+          "User-Agent": "HWDTrade-InspectionReportGenerator/1.0"
+        }
+      });
+
+      if (!res.ok) {
+        console.warn(`[UrlDownloader] HTTP ${res.status} when downloading image from ${cleanUrl.substring(0, 80)}...`);
+        return null;
+      }
+
+      const arrayBuf = await res.arrayBuffer();
+      const buf = Buffer.from(arrayBuf);
+      if (buf.length > 10) return buf;
+    } catch (err: any) {
+      console.warn(`[UrlDownloader] Failed to fetch image from ${urlStr}: ${err.message}`);
+    }
+    return null;
   }
 }

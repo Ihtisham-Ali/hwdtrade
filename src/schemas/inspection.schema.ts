@@ -57,6 +57,19 @@ export const Base64ImageSchema = z.union([
   z.any()
 ]);
 
+export const ImageUrlSchema = z.union([
+  z.string(),
+  z.object({
+    url: z.string().optional(),
+    public_url: z.string().optional(),
+    fileName: z.string().optional(),
+    caption: z.string().optional(),
+    section: z.string().optional(),
+    sequence: z.number().optional(),
+  }).passthrough(),
+  z.any()
+]);
+
 export const InspectionMetadataSchema = z.object({
   reportId: z.string().optional().default(() => `RPT-${Date.now()}`),
   templateId: z.string().optional().default("lower-hebel-site-check-1"),
@@ -77,6 +90,7 @@ export const InspectionMetadataSchema = z.object({
   generalNotes: z.union([z.array(z.string()), z.string(), z.null()]).transform(val => Array.isArray(val) ? val : (val ? [val] : [])).optional().default([]),
   imageMetadata: z.array(ImageMetadataSchema).optional().default([]),
   base64Images: z.union([z.array(Base64ImageSchema), z.string(), z.any()]).optional().default([]),
+  imageUrls: z.union([z.array(ImageUrlSchema), z.string(), z.any()]).optional().default([]),
   options: InspectionOptionsSchema.optional().default({
     includeCoverPage: true,
     includeSummary: true,
