@@ -26,24 +26,11 @@ export class MultipartService {
       if (metadata.base64Images && metadata.base64Images.length > 0) {
         for (let i = 0; i < metadata.base64Images.length; i++) {
           const item = metadata.base64Images[i];
-          const rawBase64 = item.base64.replace(/^data:image\/\w+;base64,/, "");
-          const buffer = Buffer.from(rawBase64, "base64");
-          if (buffer.length > 0) {
-            const fileName = item.fileName || `photo-${i + 1}.jpg`;
-            images.push({
-              originalFileName: fileName,
-              mimeType: "image/jpeg",
-              buffer,
-              field: "images",
-            });
-            // Record in imageMetadata
+          const extracted = MultipartService.extractImageFromItem(item, i);
+          if (extracted) {
+            images.push(extracted.filePart);
             if (!metadata.imageMetadata) metadata.imageMetadata = [];
-            metadata.imageMetadata.push({
-              fileName,
-              caption: item.caption,
-              section: item.section,
-              sequence: item.sequence || i + 1,
-            });
+            metadata.imageMetadata.push(extracted.meta);
           }
         }
       }
@@ -105,23 +92,11 @@ export class MultipartService {
     if (metadata.base64Images && metadata.base64Images.length > 0) {
       for (let i = 0; i < metadata.base64Images.length; i++) {
         const item = metadata.base64Images[i];
-        const rawBase64 = item.base64.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(rawBase64, "base64");
-        if (buffer.length > 0) {
-          const fileName = item.fileName || `photo-b64-${i + 1}.jpg`;
-          images.push({
-            originalFileName: fileName,
-            mimeType: "image/jpeg",
-            buffer,
-            field: "images",
-          });
+        const extracted = MultipartService.extractImageFromItem(item, i);
+        if (extracted) {
+          images.push(extracted.filePart);
           if (!metadata.imageMetadata) metadata.imageMetadata = [];
-          metadata.imageMetadata.push({
-            fileName,
-            caption: item.caption,
-            section: item.section,
-            sequence: item.sequence || images.length,
-          });
+          metadata.imageMetadata.push(extracted.meta);
         }
       }
     }
@@ -131,6 +106,47 @@ export class MultipartService {
       images,
       logo,
       coverImage,
+    };
+  }
+
+  public static extractImageFromItem(item: any, index: number): { filePart: UploadedFilePart; meta: { fileName: string; caption?: string; section?: string; sequence?: number } } | null {
+    if (!item) return null;
+    let str: string | undefined = undefined;
+    let fileName = `photo-${index + 1}.jpg`;
+    let caption: string | undefined = undefined;
+    let section: string | undefined = undefined;
+    let sequence: number | undefined = index + 1;
+
+    if (typeof item === "string") {
+      str = item;
+    } else if (typeof item === "object") {
+      str = item.base64 || item.data || item.file?.data || item.field?.data;
+      fileName = item.fileName || item.file?.fileName || item.field?.fileName || fileName;
+      caption = item.caption;
+      section = item.section;
+      sequence = item.sequence || sequence;
+    }
+
+    if (!str || typeof str !== "string") return null;
+    const cleanStr = str.replace(/^data:image\/\w+;base64,/, "").trim();
+    if (cleanStr.length === 0) return null;
+
+    const buffer = Buffer.from(cleanStr, "base64");
+    if (buffer.length === 0) return null;
+
+    return {
+      filePart: {
+        originalFileName: fileName,
+        mimeType: "image/jpeg",
+        buffer,
+        field: "images",
+      },
+      meta: {
+        fileName,
+        caption,
+        section,
+        sequence,
+      },
     };
   }
 }

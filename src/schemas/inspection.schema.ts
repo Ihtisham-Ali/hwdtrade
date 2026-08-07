@@ -44,13 +44,18 @@ export const SourceMetadataSchema = z.object({
   itemId: z.string().optional(),
 });
 
-export const Base64ImageSchema = z.object({
-  fileName: z.string().optional(),
-  base64: z.string(),
-  caption: z.string().optional(),
-  section: z.string().optional(),
-  sequence: z.number().optional(),
-});
+export const Base64ImageSchema = z.union([
+  z.string(),
+  z.object({
+    fileName: z.string().optional(),
+    base64: z.string().optional(),
+    data: z.string().optional(),
+    caption: z.string().optional(),
+    section: z.string().optional(),
+    sequence: z.number().optional(),
+  }).passthrough(),
+  z.any()
+]);
 
 export const InspectionMetadataSchema = z.object({
   reportId: z.string().optional().default(() => `RPT-${Date.now()}`),
