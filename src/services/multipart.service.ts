@@ -55,10 +55,11 @@ export class MultipartService {
             if (typeof item === "string") {
               urlStr = item;
             } else if (typeof item === "object" && item !== null) {
-              urlStr = item.url || item.public_url || item.download_url || item.value || item.val;
-              caption = item.caption;
-              section = item.section;
-              fileName = item.fileName || fileName;
+              urlStr = item.url || item.public_url || item.download_url || item.value || item.val ||
+                       item.queryParameter?.url || item.queryParameter?.value || item.queryParameter?.public_url;
+              caption = item.caption || item.queryParameter?.caption;
+              section = item.section || item.queryParameter?.section;
+              fileName = item.fileName || item.queryParameter?.fileName || fileName;
             }
 
             if (urlStr && typeof urlStr === "string" && urlStr.trim().startsWith("http")) {
