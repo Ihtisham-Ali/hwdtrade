@@ -18,9 +18,21 @@ export class MultipartService {
 
     // Handle Application/JSON Direct Requests
     if (contentType.includes("application/json") || (!req.isMultipart() && req.body)) {
-      const body = req.body as any;
+      let body = req.body as any;
+      if (typeof body === "string") {
+        try {
+          body = JSON.parse(body);
+        } catch (e: any) {
+          console.warn(`[ParseRequest] Body is string but JSON.parse failed: ${e.message}`);
+        }
+      }
       const rawMeta = body.metadata ? (typeof body.metadata === "string" ? JSON.parse(body.metadata) : body.metadata) : body;
-      metadata = InspectionMetadataSchema.parse(rawMeta);
+      try {
+        metadata = InspectionMetadataSchema.parse(rawMeta);
+      } catch (zodErr: any) {
+        console.warn(`[ParseRequest] Zod parse warning: ${zodErr.message}. Using raw metadata fallback.`);
+        metadata = rawMeta as any;
+      }
 
       // 1. Extract images from imageUrls if provided (RECOMMENDED, LIGHTWEIGHT & SCALABLE!)
       if (metadata.imageUrls) {
