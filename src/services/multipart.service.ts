@@ -23,10 +23,17 @@ export class MultipartService {
       metadata = InspectionMetadataSchema.parse(rawMeta);
 
       // Extract base64Images if present
-      if (typeof metadata.base64Images === "string") {
+      const rawB64Type = typeof metadata.base64Images;
+      console.log(`[DEBUG] base64Images raw type: ${rawB64Type}, isArray: ${Array.isArray(metadata.base64Images)}`);
+      if (rawB64Type === "string") {
+        const rawStr = metadata.base64Images as string;
+        console.log(`[DEBUG] base64Images string length: ${rawStr.length}, starts with: ${rawStr.substring(0, 120)}`);
         try {
-          metadata.base64Images = JSON.parse(metadata.base64Images);
-        } catch (e) {}
+          metadata.base64Images = JSON.parse(rawStr);
+          console.log(`[DEBUG] After JSON.parse: type=${typeof metadata.base64Images}, isArray=${Array.isArray(metadata.base64Images)}, keys=${typeof metadata.base64Images === "object" ? Object.keys(metadata.base64Images as any) : "N/A"}`);
+        } catch (e: any) {
+          console.log(`[DEBUG] JSON.parse failed: ${e.message}`);
+        }
       }
 
       // Normalize base64Images to an array if it's a single object or string
@@ -36,15 +43,21 @@ export class MultipartService {
       } else if (metadata.base64Images) {
         rawImageItems = [metadata.base64Images];
       }
+      console.log(`[DEBUG] rawImageItems count: ${rawImageItems.length}`);
 
       if (rawImageItems.length > 0) {
         for (let i = 0; i < rawImageItems.length; i++) {
           const item = rawImageItems[i];
+          console.log(`[DEBUG] Item ${i}: type=${typeof item}, isArray=${Array.isArray(item)}, keys=${typeof item === "object" && item ? Object.keys(item) : "N/A"}`);
           const extracted = MultipartService.extractImageFromItem(item, i);
           if (extracted) {
+            const buf = extracted.filePart.buffer;
+            console.log(`[DEBUG] Extracted image ${i}: buffer.length=${buf.length}, first20hex=${buf.subarray(0, 20).toString("hex")}, isJPEG=${buf[0]===0xFF && buf[1]===0xD8}`);
             images.push(extracted.filePart);
             if (!metadata.imageMetadata) metadata.imageMetadata = [];
             metadata.imageMetadata.push(extracted.meta);
+          } else {
+            console.log(`[DEBUG] extractImageFromItem returned null for item ${i}`);
           }
         }
       }
