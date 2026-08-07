@@ -38,17 +38,7 @@ export class MultipartService {
       if (metadata.imageUrls) {
         let urlList: any[] = [];
         if (typeof metadata.imageUrls === "string") {
-          const rawStr = metadata.imageUrls.trim();
-          if (rawStr.startsWith("[") || rawStr.startsWith("{")) {
-            try {
-              const parsed = JSON.parse(rawStr);
-              urlList = Array.isArray(parsed) ? parsed : [parsed];
-            } catch (e) {
-              urlList = rawStr.split(",").map(u => u.trim());
-            }
-          } else {
-            urlList = rawStr.split(",").map(u => u.trim());
-          }
+          urlList = MultipartService.parseConcatenatedJsonObjects(metadata.imageUrls);
         } else if (Array.isArray(metadata.imageUrls)) {
           urlList = metadata.imageUrls;
         } else if (metadata.imageUrls) {
@@ -59,39 +49,11 @@ export class MultipartService {
           console.log(`[UrlExtract] Downloading ${urlList.length} images from imageUrls...`);
           for (let i = 0; i < urlList.length; i++) {
             const item = urlList[i];
-            let urlStr: string | undefined = undefined;
-            let caption: string | undefined = undefined;
-            let section: string | undefined = undefined;
-            let fileName = `photo-${images.length + 1}.jpg`;
-
-            if (typeof item === "string") {
-              urlStr = item;
-            } else if (typeof item === "object" && item !== null) {
-              urlStr = item.url || item.public_url || item.download_url || item.value || item.val ||
-                       item.queryParameter?.url || item.queryParameter?.value || item.queryParameter?.public_url;
-              caption = item.caption || item.queryParameter?.caption;
-              section = item.section || item.queryParameter?.section;
-              fileName = item.fileName || item.queryParameter?.fileName || fileName;
-            }
-
-            if (urlStr && typeof urlStr === "string" && urlStr.trim().startsWith("http")) {
-              const buf = await MultipartService.downloadImageFromUrl(urlStr);
-              if (buf) {
-                images.push({
-                  originalFileName: fileName,
-                  mimeType: "image/jpeg",
-                  buffer: buf,
-                  field: "images"
-                });
-                if (!metadata.imageMetadata) metadata.imageMetadata = [];
-                metadata.imageMetadata.push({
-                  fileName,
-                  caption,
-                  section,
-                  sequence: images.length
-                });
-                console.log(`[UrlExtract] Downloaded photo ${images.length} (${buf.length} bytes) from URL`);
-              }
+            const extracted = await MultipartService.extractImageFromItem(item, images.length);
+            if (extracted) {
+              images.push(extracted.filePart);
+              if (!metadata.imageMetadata) metadata.imageMetadata = [];
+              metadata.imageMetadata.push(extracted.meta);
             }
           }
         }
@@ -436,5 +398,67 @@ export class MultipartService {
       console.warn(`[UrlDownloader] Failed to fetch image from ${urlStr}: ${err.message}`);
     }
     return null;
+  }
+
+  public static parseConcatenatedJsonObjects(rawStr: string): any[] {
+    const trimmed = rawStr.trim();
+    if (!trimmed) return [];
+
+    // Try standard JSON.parse first
+    try {
+      const parsed = JSON.parse(trimmed);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch (e: any) {
+      // Concatenated JSON objects (e.g. {...}, {...} or {...}{...})
+      const results: any[] = [];
+      const posMatch = e.message.match(/position\s+(\d+)/i);
+      const errorPos = posMatch ? parseInt(posMatch[1]) : -1;
+
+      if (errorPos > 0) {
+        let remaining = trimmed;
+        let iterations = 0;
+
+        while (remaining.length > 0 && iterations < 100) {
+          iterations++;
+          const nextBrace = remaining.indexOf("{");
+          if (nextBrace === -1) break;
+          if (nextBrace > 0) remaining = remaining.substring(nextBrace);
+
+          let parsedObj: any = null;
+          let consumed = remaining.length;
+
+          try {
+            parsedObj = JSON.parse(remaining);
+          } catch (sliceErr: any) {
+            const sm = sliceErr.message.match(/position\s+(\d+)/i);
+            if (!sm) break;
+            consumed = parseInt(sm[1]);
+            if (consumed <= 0) break;
+            try {
+              parsedObj = JSON.parse(remaining.substring(0, consumed));
+            } catch (e3) {
+              remaining = remaining.substring(consumed);
+              continue;
+            }
+          }
+
+          if (parsedObj) {
+            results.push(parsedObj);
+          }
+
+          if (consumed >= remaining.length) break;
+          remaining = remaining.substring(consumed);
+        }
+      }
+
+      if (results.length > 0) return results;
+
+      // Fallback: simple comma-separated URL string ("http://a.com, http://b.com")
+      if (trimmed.includes("http")) {
+        return trimmed.split(",").map(s => s.trim()).filter(s => s.startsWith("http"));
+      }
+
+      return [];
+    }
   }
 }
