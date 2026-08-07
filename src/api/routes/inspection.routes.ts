@@ -18,14 +18,6 @@ export async function inspectionRoutes(fastify: FastifyInstance) {
 
   // 1. Primary Multipart Generation Endpoint
   fastify.post("/api/v1/inspection-reports/generate", async (req: FastifyRequest, reply: FastifyReply) => {
-    const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
-
-    if (idempotencyKey && idempotencyCache.has(idempotencyKey)) {
-      req.log.info(`[Idempotency] Returning cached response for key: ${idempotencyKey}`);
-      const cached = idempotencyCache.get(idempotencyKey);
-      return reply.send(cached);
-    }
-
     try {
       const parsed = await MultipartService.parseRequest(req);
       const { metadata, images, logo, coverImage } = parsed;
@@ -60,10 +52,6 @@ export async function inspectionRoutes(fastify: FastifyInstance) {
         compressionProfile: compressionResult.compressionProfile,
         warnings: compressionResult.warnings,
       };
-
-      if (idempotencyKey) {
-        idempotencyCache.set(idempotencyKey, responsePayload);
-      }
 
       // Check if client requested binary PDF download directly
       const acceptHeader = req.headers.accept || "";
