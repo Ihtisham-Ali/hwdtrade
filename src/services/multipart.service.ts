@@ -23,7 +23,13 @@ export class MultipartService {
       metadata = InspectionMetadataSchema.parse(rawMeta);
 
       // Extract base64Images if present
-      if (metadata.base64Images && metadata.base64Images.length > 0) {
+      if (typeof metadata.base64Images === "string") {
+        try {
+          metadata.base64Images = JSON.parse(metadata.base64Images);
+        } catch (e) {}
+      }
+
+      if (Array.isArray(metadata.base64Images) && metadata.base64Images.length > 0) {
         for (let i = 0; i < metadata.base64Images.length; i++) {
           const item = metadata.base64Images[i];
           const extracted = MultipartService.extractImageFromItem(item, i);
@@ -89,7 +95,13 @@ export class MultipartService {
     metadata = InspectionMetadataSchema.parse(parsedJson);
 
     // Extract base64Images from metadata if present
-    if (metadata.base64Images && metadata.base64Images.length > 0) {
+    if (typeof metadata.base64Images === "string") {
+      try {
+        metadata.base64Images = JSON.parse(metadata.base64Images);
+      } catch (e) {}
+    }
+
+    if (Array.isArray(metadata.base64Images) && metadata.base64Images.length > 0) {
       for (let i = 0; i < metadata.base64Images.length; i++) {
         const item = metadata.base64Images[i];
         const extracted = MultipartService.extractImageFromItem(item, i);
