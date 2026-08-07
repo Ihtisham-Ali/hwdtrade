@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const PropertySchema = z.object({
-  lotNumber: z.string().optional().default(""),
-  addressLine: z.string().optional().default(""),
-  suburb: z.string().optional().default(""),
-  postcode: z.string().optional().default(""),
-  fullAddress: z.string().min(1, "Full address is required"),
+  lotNumber: z.string().nullish().transform(val => val || ""),
+  addressLine: z.string().nullish().transform(val => val || ""),
+  suburb: z.string().nullish().transform(val => val || ""),
+  postcode: z.string().nullish().transform(val => val || ""),
+  fullAddress: z.string().nullish().transform(val => val || "N/A"),
 });
 
 export const InspectorSchema = z.object({
-  name: z.string().optional().default("Site Inspector"),
-  company: z.string().optional().default("Inspection Services"),
+  name: z.string().nullish().transform(val => val || "Site Inspector"),
+  company: z.string().nullish().transform(val => val || "HWD Trade"),
 });
 
 export const BrandingSchema = z.object({
@@ -49,7 +49,7 @@ export const Base64ImageSchema = z.union([
   z.object({
     fileName: z.string().optional(),
     base64: z.string().optional(),
-    data: z.string().optional(),
+    data: z.any().optional(),
     caption: z.string().optional(),
     section: z.string().optional(),
     sequence: z.number().optional(),
@@ -62,21 +62,21 @@ export const InspectionMetadataSchema = z.object({
   templateId: z.string().optional().default("lower-hebel-site-check-1"),
   reportTitle: z.string().optional().default("Site Inspection Report"),
   reportType: z.string().optional().default("Lower Hebel Installation"),
-  builder: z.string().optional().default("N/A"),
-  checkDate: z.string().optional().default(() => new Date().toLocaleDateString("en-AU")),
-  siteChecksCompleted: z.string().optional(),
-  property: PropertySchema,
-  inspector: InspectorSchema.optional().default({ name: "Site Inspector", company: "Inspection Services" }),
+  builder: z.string().nullish().transform(val => val || "N/A"),
+  checkDate: z.string().nullish().transform(val => val || new Date().toLocaleDateString("en-AU")),
+  siteChecksCompleted: z.string().nullish().transform(val => val || ""),
+  property: PropertySchema.optional().default({ fullAddress: "N/A" }),
+  inspector: InspectorSchema.optional().default({ name: "Site Inspector", company: "HWD Trade" }),
   branding: BrandingSchema.optional().default({
     companyName: "HWD Trade",
     primaryColour: "#0F172A",
     accentColour: "#00AEEF",
     secondaryColour: "#14B8A6"
   }),
-  responses: z.record(z.string(), z.string()).optional().default({}),
-  generalNotes: z.union([z.array(z.string()), z.string()]).optional().default([]),
+  responses: z.record(z.string(), z.union([z.string(), z.null()]).transform(val => val || "")).optional().default({}),
+  generalNotes: z.union([z.array(z.string()), z.string(), z.null()]).transform(val => Array.isArray(val) ? val : (val ? [val] : [])).optional().default([]),
   imageMetadata: z.array(ImageMetadataSchema).optional().default([]),
-  base64Images: z.array(Base64ImageSchema).optional().default([]),
+  base64Images: z.union([z.array(Base64ImageSchema), z.string(), z.any()]).optional().default([]),
   options: InspectionOptionsSchema.optional().default({
     includeCoverPage: true,
     includeSummary: true,
