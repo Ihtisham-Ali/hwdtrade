@@ -190,10 +190,11 @@ export class ReportDataService {
 
     // General Notes List
     let generalNotesList: string[] = [];
-    if (Array.isArray(metadata.generalNotes)) {
-      generalNotesList = metadata.generalNotes.filter((n) => n && n.trim().length > 0);
-    } else if (typeof metadata.generalNotes === "string" && metadata.generalNotes.trim().length > 0) {
-      generalNotesList = [metadata.generalNotes.trim()];
+    const notesRaw = metadata.generalNotes as any;
+    if (Array.isArray(notesRaw)) {
+      generalNotesList = notesRaw.filter((n: any) => n && typeof n === "string" && n.trim().length > 0);
+    } else if (typeof notesRaw === "string" && notesRaw.trim().length > 0) {
+      generalNotesList = [notesRaw.trim()];
     }
 
     // Photo Gallery Paging (2 photos per page)
