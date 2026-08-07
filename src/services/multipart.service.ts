@@ -156,7 +156,7 @@ export class MultipartService {
 
               if (parsedObj) {
                 // IMMEDIATELY convert to Buffer — frees the huge JS number array
-                const extracted = MultipartService.extractImageFromItem(parsedObj, imgIdx);
+                const extracted = await MultipartService.extractImageFromItem(parsedObj, imgIdx);
                 parsedObj = null; // Help GC reclaim the big byte array
                 if (extracted) {
                   const buf = extracted.filePart.buffer;
@@ -181,7 +181,7 @@ export class MultipartService {
         if (directParsed !== null) {
           let items: any[] = Array.isArray(directParsed) ? directParsed : [directParsed];
           for (let i = 0; i < items.length; i++) {
-            const extracted = MultipartService.extractImageFromItem(items[i], i);
+            const extracted = await MultipartService.extractImageFromItem(items[i], i);
             if (extracted) {
               images.push(extracted.filePart);
               if (!metadata.imageMetadata) metadata.imageMetadata = [];
@@ -255,7 +255,7 @@ export class MultipartService {
     if (Array.isArray(metadata.base64Images) && metadata.base64Images.length > 0) {
       for (let i = 0; i < metadata.base64Images.length; i++) {
         const item = metadata.base64Images[i];
-        const extracted = MultipartService.extractImageFromItem(item, i);
+        const extracted = await MultipartService.extractImageFromItem(item, i);
         if (extracted) {
           images.push(extracted.filePart);
           if (!metadata.imageMetadata) metadata.imageMetadata = [];
@@ -355,7 +355,7 @@ export class MultipartService {
     return null;
   }
 
-  public static extractImageFromItem(item: any, index: number): { filePart: UploadedFilePart; meta: { fileName: string; caption?: string; section?: string; sequence?: number } } | null {
+  public static async extractImageFromItem(item: any, index: number): Promise<{ filePart: UploadedFilePart; meta: { fileName: string; caption?: string; section?: string; sequence?: number } } | null> {
     if (!item) return null;
     let fileName = `photo-${index + 1}.jpg`;
     let caption: string | undefined = undefined;
@@ -363,13 +363,38 @@ export class MultipartService {
     let sequence: number | undefined = index + 1;
 
     if (typeof item === "object" && !Buffer.isBuffer(item)) {
-      fileName = item.fileName || item.file?.fileName || item.field?.fileName || fileName;
-      caption = item.caption || item.field?.caption;
-      section = item.section || item.field?.section;
-      sequence = item.sequence || item.field?.sequence || sequence;
+      fileName = item.fileName || item.file?.fileName || item.field?.fileName || item.queryParameter?.fileName || fileName;
+      caption = item.caption || item.field?.caption || item.queryParameter?.caption;
+      section = item.section || item.field?.section || item.queryParameter?.section;
+      sequence = item.sequence || item.field?.sequence || item.queryParameter?.sequence || sequence;
     }
 
-    const buffer = MultipartService.toBuffer(item);
+    // 1. Check if item contains an HTTP/HTTPS URL
+    let urlCandidate: string | undefined = undefined;
+    if (typeof item === "string") {
+      const trimmed = item.trim();
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        urlCandidate = trimmed;
+      }
+    } else if (typeof item === "object" && item !== null) {
+      const candidate = item.url || item.public_url || item.download_url || item.value || item.val ||
+                        item.queryParameter?.url || item.queryParameter?.value || item.queryParameter?.public_url;
+      if (typeof candidate === "string" && (candidate.trim().startsWith("http://") || candidate.trim().startsWith("https://"))) {
+        urlCandidate = candidate.trim();
+      }
+    }
+
+    let buffer: Buffer | null = null;
+    if (urlCandidate) {
+      console.log(`[ImageExtract] Downloading image from URL candidate: ${urlCandidate.substring(0, 80)}...`);
+      buffer = await MultipartService.downloadImageFromUrl(urlCandidate);
+    }
+
+    // 2. Fall back to Base64/Hex/Byte array buffer extraction if no URL or URL download failed
+    if (!buffer) {
+      buffer = MultipartService.toBuffer(item);
+    }
+
     if (!buffer || buffer.length === 0) return null;
 
     return {
