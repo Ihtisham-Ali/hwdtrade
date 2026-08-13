@@ -4,6 +4,7 @@ import { InspectionMetadata } from "../schemas/inspection.schema.js";
 import { InspectionTemplateConfig } from "../schemas/template.schema.js";
 import { NormalisedStatus, StatusNormaliserService } from "./status-normaliser.service.js";
 import { ProcessedImage } from "./image-processing.service.js";
+import { DEFAULT_HWD_LOGO_DATA_URI } from "../config/default-logo.js";
 
 export interface QuestionViewModel {
   id: string;
@@ -235,9 +236,10 @@ export class ReportDataService {
     const address = metadata.property.fullAddress || `${metadata.property.addressLine}, ${metadata.property.suburb}`;
     const introductionText = `The ${metadata.reportTitle} inspection at ${address} has been completed for ${metadata.reportType}. This report summarises the current site conditions, completed inspection items, outstanding requirements, and supporting photographic evidence. Items requiring attention are highlighted throughout the report and should be completed before the next site check.`;
 
-    // Default Logo: Custom logo URI -> or HWD Trade logo.png file
-    let logoUri = customLogoUri || metadata.branding?.logoUrl;
-    if (!logoUri) {
+    // Default Logo: Custom logo URI -> file system -> embedded DEFAULT_HWD_LOGO_DATA_URI
+    let logoUri = customLogoUri || (metadata.branding?.logoUrl && metadata.branding.logoUrl.startsWith("data:image/") ? metadata.branding.logoUrl : undefined);
+
+    if (!logoUri || !logoUri.startsWith("data:image/")) {
       try {
         const defaultLogoPath = path.join(process.cwd(), "public", "logo.png");
         if (fs.existsSync(defaultLogoPath)) {
@@ -247,6 +249,10 @@ export class ReportDataService {
       } catch (e) {
         // Fallback if file read fails
       }
+    }
+
+    if (!logoUri || !logoUri.startsWith("data:image/")) {
+      logoUri = DEFAULT_HWD_LOGO_DATA_URI;
     }
 
     // Detail Pages Paging (2 sections per page for clean A4 pagination)
