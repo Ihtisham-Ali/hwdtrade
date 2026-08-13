@@ -12,6 +12,7 @@ export interface QuestionViewModel {
   rawResponse: string;
   status: NormalisedStatus;
   isFullWidth: boolean;
+  isNote: boolean;
   type: string;
 }
 
@@ -29,6 +30,7 @@ export interface OutstandingItemViewModel {
   rawResponse: string;
   status: NormalisedStatus;
   requiredAction: string;
+  isCrit: boolean;
 }
 
 export interface SummaryStatsViewModel {
@@ -52,6 +54,7 @@ export interface ReportViewModel {
   sections: SectionViewModel[];
   outstandingItems: OutstandingItemViewModel[];
   coverImageUri?: string;
+  coverBgFlatUri?: string;
   logoUri?: string;
   galleryPages: {
     pageNumber: number;
@@ -131,8 +134,11 @@ export class ReportDataService {
             rawResponse: status.displayLabel,
             status,
             requiredAction: actionText,
+            isCrit: status.category === "cannot_install",
           });
         }
+
+        const isNote = q.type === "notes" || q.responseKey.endsWith("Notes");
 
         questionVMs.push({
           id: q.id,
@@ -140,7 +146,8 @@ export class ReportDataService {
           responseKey: q.responseKey,
           rawResponse: status.displayLabel,
           status,
-          isFullWidth: q.isFullWidth || false,
+          isFullWidth: q.isFullWidth || isNote || false,
+          isNote,
           type: q.type || "choice",
         });
       }
@@ -182,6 +189,16 @@ export class ReportDataService {
       recommendedAction,
     };
 
+    // Cover Background Flat: Default flat cover background
+    let coverBgFlatUri: string | undefined = undefined;
+    try {
+      const defaultBgPath = path.join(process.cwd(), "public", "cover_bg_flat.png");
+      if (fs.existsSync(defaultBgPath)) {
+        const bgBuffer = fs.readFileSync(defaultBgPath);
+        coverBgFlatUri = `data:image/png;base64,${bgBuffer.toString("base64")}`;
+      }
+    } catch (e) {}
+
     // Cover Image: Custom uploaded cover -> or 1st processed image -> or fallback undefined
     let coverImageUri = customCoverUri;
     if (!coverImageUri && processedImages.length > 0) {
@@ -211,11 +228,11 @@ export class ReportDataService {
     const address = metadata.property.fullAddress || `${metadata.property.addressLine}, ${metadata.property.suburb}`;
     const introductionText = `The ${metadata.reportTitle} inspection at ${address} has been completed for ${metadata.reportType}. This report summarises the current site conditions, completed inspection items, outstanding requirements, and supporting photographic evidence. Items requiring attention are highlighted throughout the report and should be completed before the next site check.`;
 
-    // Default Logo: Custom logo URI -> or HWD Trade base64 logo file
+    // Default Logo: Custom logo URI -> or HWD Trade logo.png file
     let logoUri = customLogoUri || metadata.branding?.logoUrl;
     if (!logoUri) {
       try {
-        const defaultLogoPath = path.join(process.cwd(), "public", "hwd-trade-logo.png");
+        const defaultLogoPath = path.join(process.cwd(), "public", "logo.png");
         if (fs.existsSync(defaultLogoPath)) {
           const logoBuffer = fs.readFileSync(defaultLogoPath);
           logoUri = `data:image/png;base64,${logoBuffer.toString("base64")}`;
@@ -232,6 +249,7 @@ export class ReportDataService {
       sections,
       outstandingItems,
       coverImageUri,
+      coverBgFlatUri,
       logoUri,
       galleryPages,
       generalNotesList,

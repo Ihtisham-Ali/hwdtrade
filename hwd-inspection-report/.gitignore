@@ -1,0 +1,15 @@
+# Generated output
+report.html
+report.pdf
+*.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db

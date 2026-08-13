@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "id": "HSC1-12738265932",
+    "cover_badge": "SITE INSPECTION REPORT",
+    "title": "Test Ali",
+    "subtitle": "Lower Hebel Installation",
+    "property_address": "Test Ali",
+    "builder": "N/A",
+    "check_date": "07/08/2026",
+    "site_check_reference": "HSC1 - Check 1",
+    "inspector": "Site Inspector",
+    "footer_left": "Test Ali",
+    "confidential_note": "CONFIDENTIAL REPORT • PREPARED FOR BUILDER / CLIENT",
+    "status": "ACTION REQUIRED"
+  },
+  "summary": {
+    "intro": "The Test Ali inspection at Test Ali has been completed for Lower Hebel Installation. This report summarises the current site conditions, completed inspection items, outstanding requirements, and supporting photographic evidence. Items requiring attention are highlighted throughout the report and should be completed before the next site check.",
+    "stats": [
+      { "n": "35", "label": "TOTAL CHECKS", "type": "" },
+      { "n": "7", "label": "COMPLETED", "type": "" },
+      { "n": "1", "label": "ATTENTION REQ.", "type": "attn" },
+      { "n": "1", "label": "CANNOT INSTALL", "type": "crit" }
+    ],
+    "outcome": {
+      "label": "OVERALL INSPECTION OUTCOME",
+      "value": "ACTION REQUIRED",
+      "detail": "ACTION REQUIRED: Critical installation blockers identified. Complete outstanding actions immediately."
+    },
+    "outstanding": [
+      {
+        "num": "ITEM 01",
+        "category": "WALL WRAP, SARKING, WINDOWS, DOORS & FASCIA",
+        "title": "Garage Head Notes",
+        "flag": { "text": "Timber needed on underside of steel beam for top hat fixing", "type": "attn" },
+        "action": "REQUIRED ACTION: Rectify or complete item prior to next inspection."
+      },
+      {
+        "num": "ITEM 02",
+        "category": "EDGE PROTECTION, SCAFFOLD & ZERO BOUNDARY",
+        "title": "Can the Zero Boundary be installed?",
+        "flag": { "text": "Cannot Install", "type": "crit" },
+        "action": "REQUIRED ACTION: Investigate site boundary or obstruction; arrange temporary access platform if required."
+      }
+    ]
+  },
+  "detail_pages": [
+    [
+      {
+        "title": "UTILITIES & SERVICES",
+        "items": [
+          { "q": "Is the Power Installed to the House and the Power is On?", "status": "Power Onsite but Box Not Installed to House", "type": "info" },
+          { "q": "Has the Power been marked with Spray Paint?", "status": "Conduct Visible", "type": "info" },
+          { "q": "Is the Water installed to the House and Water is Running?", "status": "Water Onsite", "type": "info" },
+          { "q": "Does the Bin need to be Emptied?", "status": "Half Full", "type": "info" },
+          { "q": "Is a Site Clean required?", "status": "Not Required", "type": "na" }
+        ]
+      },
+      {
+        "title": "ELECTRICAL WIRES, PLUMBING & GAS",
+        "items": [
+          { "q": "Are the wires on Double Skin/Piers brought out centre?", "status": "Not Completed", "type": "attn" },
+          { "q": "Are the wires brought out at the correct height?", "status": "Completed", "type": "done" },
+          { "q": "Is the A/C Pipe sitting outside the Hebel or set inside the Stud Cavity?", "status": "Set Outside Hebel", "type": "info" },
+          { "q": "Are the Gas pipes in the Batten/Stud Cavity?", "status": "Completed", "type": "done" },
+          { "q": "Are the Water pipes set in the Batten/Stud Cavity?", "status": "Completed", "type": "done" }
+        ]
+      }
+    ],
+    [
+      {
+        "title": "WALL WRAP, SARKING, WINDOWS, DOORS & FASCIA",
+        "items": [
+          { "q": "Is the Sarking 100% Installed?", "status": "Completed", "type": "done" },
+          { "q": "Are the Windows Installed?", "status": "Completed", "type": "done" },
+          { "q": "Are the Window Reveals Correct?", "status": "Correct", "type": "done" },
+          { "q": "Are the Doors Installed?", "status": "Not Complete", "type": "attn" },
+          { "q": "Are the Door Jamb Reveals Correct?", "status": "Wrong for Batten Size", "type": "attn" },
+          { "q": "Are the Sliders Installed?", "status": "Completed", "type": "done" },
+          { "q": "Is the Garage Door Jamb Installed?", "status": "Not Complete", "type": "attn" },
+          { "q": "Is the Garage Door Jamb Width Correct?", "status": "Working on it", "type": "attn" },
+          { "q": "Is the Garage Head Correct?", "status": "Not Correct", "type": "attn" },
+          { "note": "Garage Head Notes", "text": "Timber needed on underside of steel beam for top hat fixing" },
+          { "q": "Is the Frame to Fascia Correct for the Batten and Hebel to get behind?", "status": "Correct", "type": "done" }
+        ]
+      },
+      {
+        "title": "EDGE PROTECTION, SCAFFOLD & ZERO BOUNDARY",
+        "items": [
+          { "q": "Has the Edge Protection been removed?", "status": "Not Complete", "type": "attn" },
+          { "q": "Is there any Scaffold needing to be removed?", "status": "Needs to be Removed", "type": "attn" },
+          { "q": "Can the Zero Boundary be installed?", "status": "Cannot Install", "type": "crit" },
+          { "note": "Zero Boundary Notes", "text": "Block wall - no hebel" }
+        ]
+      }
+    ],
+    [
+      {
+        "title": "FRAMING",
+        "items": [
+          { "q": "Frame Check", "status": "Completed", "type": "done" },
+          { "q": "Are there piers that require framing?", "status": "1x Pier Frame", "type": "info" },
+          { "q": "Is more framing required?", "status": "Required", "type": "attn" },
+          { "note": "Framing Notes", "text": "Timber bracing to be removed from whole job" }
+        ]
+      },
+      {
+        "title": "SLAB REBATE",
+        "items": [
+          { "q": "Is the Slab Rebate/Step Down Correct?", "status": "0-2Lm", "type": "info" }
+        ]
+      },
+      {
+        "title": "SOIL HEIGHT",
+        "items": [
+          { "q": "Is the Soil Height Correct?", "status": "100-150mm", "type": "info" },
+          { "note": "Soil Height Notes", "text": "Soil height is close to slab height around whole job" }
+        ]
+      },
+      {
+        "title": "TERMITE BARRIER",
+        "items": [
+          { "q": "Is there Termite Barrier needed for the Pier on Slab?", "status": "0x Pier to Slab", "type": "na" },
+          { "q": "Is there Termite Barrier needed for the Pier Base on Footing?", "status": "0x Pier to Footing", "type": "na" },
+          { "q": "Has the Termite Barrier been ordered?", "status": "N/A", "type": "na" }
+        ]
+      },
+      {
+        "title": "GENERAL INSPECTION NOTES & COMMENTS",
+        "list": ["All notes"]
+      }
+    ]
+  ],
+  "photos": {
+    "title": "SITE PHOTOGRAPHY",
+    "subtitle": "Inspection Photographic Evidence & Detailed Observations",
+    "files": [
+      "photos/photo1.png", "photos/photo2.png", "photos/photo3.png",
+      "photos/photo4.png", "photos/photo5.png", "photos/photo6.png",
+      "photos/photo7.png", "photos/photo8.png", "photos/photo9.png",
+      "photos/photo10.png", "photos/photo11.png", "photos/photo12.png"
+    ]
+  }
+}

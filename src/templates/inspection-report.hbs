@@ -11,249 +11,214 @@
 
   {{#if metadata.options.includeCoverPage}}
   <!-- COVER PAGE -->
-  <div class="page cover-page">
-    {{#if coverImageUri}}
-    <div class="cover-hero-bg" style="background-image: url('{{coverImageUri}}');"></div>
-    {{/if}}
-    <div class="cover-gradient-overlay"></div>
-
-    <div class="cover-content">
-      <div class="cover-header-brand">
-        <div class="cover-brand-title">{{metadata.branding.companyName}}</div>
+  <section class="page cover">
+    <div class="cover-bg" style="background-image: url('{{#if coverImageUri}}{{coverImageUri}}{{else}}{{coverBgFlatUri}}{{/if}}');"></div>
+    <div class="cover-overlay"></div>
+    <div class="cover-inner">
+      <div class="cover-top">
+        <div class="brand">HWD TRADE</div>
         {{#if logoUri}}
-        <img src="{{logoUri}}" class="cover-logo-img" alt="Logo" />
+        <img class="cover-logo" src="{{logoUri}}" alt="Logo" />
         {{/if}}
       </div>
-
-      <div class="cover-main-titles">
-        <div class="cover-badge">SITE INSPECTION REPORT</div>
-        <h1 class="cover-title">{{metadata.reportTitle}}</h1>
-        <div class="cover-subtitle">{{metadata.reportType}}</div>
-
-        <div class="cover-metadata-card">
-          <div class="cover-meta-grid">
-            <div class="cover-meta-item">
-              <label>PROPERTY ADDRESS</label>
-              <span>{{metadata.property.fullAddress}}</span>
-            </div>
-            <div class="cover-meta-item">
-              <label>BUILDER</label>
-              <span>{{metadata.builder}}</span>
-            </div>
-            <div class="cover-meta-item">
-              <label>CHECK DATE</label>
-              <span>{{formattedDate}}</span>
-            </div>
-            <div class="cover-meta-item">
-              <label>SITE CHECK REFERENCE</label>
-              <span>{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}HSC1 - Check 1{{/if}}</span>
-            </div>
-            <div class="cover-meta-item">
-              <label>REPORT ID</label>
-              <span>{{metadata.reportId}}</span>
-            </div>
-            <div class="cover-meta-item">
-              <label>INSPECTOR</label>
-              <span>{{metadata.inspector.name}}</span>
-            </div>
-          </div>
-        </div>
+      <div class="cover-mid">
+        <span class="pill">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}SITE CHECK 1 REPORT{{/if}}</span>
+        <h1 class="cover-name">{{metadata.reportTitle}}</h1>
+        <div class="cover-sub">{{metadata.reportType}}</div>
       </div>
-
-      <div class="cover-footer-bar">
-        <span>CONFIDENTIAL REPORT &bull; PREPARED FOR BUILDER / CLIENT</span>
-        <span>STATUS: {{stats.overallStatus}}</span>
+      <div class="cover-card">
+        <div class="cc"><div class="cc-l">PROPERTY ADDRESS</div><div class="cc-v">{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}N/A{{/if}}</div></div>
+        <div class="cc"><div class="cc-l">BUILDER</div><div class="cc-v">{{#if metadata.builder}}{{metadata.builder}}{{else}}N/A{{/if}}</div></div>
+        <div class="cc"><div class="cc-l">CHECK DATE</div><div class="cc-v">{{formattedDate}}</div></div>
+        <div class="cc"><div class="cc-l">SITE CHECK REFERENCE</div><div class="cc-v">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}HSC1 - Check 1{{/if}}</div></div>
+        <div class="cc"><div class="cc-l">REPORT ID</div><div class="cc-v">{{metadata.reportId}}</div></div>
+        <div class="cc"><div class="cc-l">INSPECTOR</div><div class="cc-v">{{#if metadata.inspector.name}}{{metadata.inspector.name}}{{else}}Site Inspector{{/if}}</div></div>
+      </div>
+      <div class="cover-foot">
+        <div>CONFIDENTIAL REPORT &bull; PREPARED FOR BUILDER / CLIENT</div>
+        <div class="status-red">STATUS: {{stats.overallStatus}}</div>
       </div>
     </div>
-  </div>
+  </section>
   {{/if}}
 
   <!-- EXECUTIVE SUMMARY & DASHBOARD PAGE -->
-  <div class="page">
-    <div class="page-header">
-      <div class="header-brand">{{metadata.branding.companyName}} &bull; INSPECTION REPORT</div>
-      <div class="header-ref">REF: {{metadata.reportId}} | {{formattedDate}}</div>
+  <section class="page">
+    <div class="pg-head">
+      <div class="ph-left">
+        {{#if logoUri}}<img class="ph-logo" src="{{logoUri}}" alt="Logo">{{/if}}
+        <span class="ph-title">INSPECTION SUMMARY</span>
+      </div>
+      <div class="ph-ref">REF: {{metadata.reportId}}</div>
     </div>
 
-    <div class="section-header">
-      <div class="section-title">
-        <div class="section-title-tag"></div>
-        INSPECTION SUMMARY & DASHBOARD
+    <div class="pg-body">
+      <div class="h2"><span class="h2-bar"></span>INSPECTION SUMMARY &amp; DASHBOARD</div>
+      <p class="intro">{{introductionText}}</p>
+      
+      <div class="tiles">
+        <div class="tile">
+          <div class="tile-n">{{stats.totalChecks}}</div>
+          <div class="tile-l">TOTAL CHECKS</div>
+        </div>
+        <div class="tile">
+          <div class="tile-n">{{stats.completedCount}}</div>
+          <div class="tile-l">COMPLETED</div>
+        </div>
+        <div class="tile {{#if stats.attentionCount}}attn{{/if}}">
+          <div class="tile-n">{{stats.attentionCount}}</div>
+          <div class="tile-l">NEEDS ATTENTION</div>
+        </div>
+        <div class="tile {{#if stats.cannotInstallCount}}crit{{/if}}">
+          <div class="tile-n">{{stats.cannotInstallCount}}</div>
+          <div class="tile-l">CANNOT INSTALL</div>
+        </div>
       </div>
+
+      <div class="outcome">
+        <div class="oc-left">
+          <div class="oc-l">OVERALL INSPECTION OUTCOME</div>
+          <div class="oc-v">{{stats.overallStatus}}</div>
+        </div>
+        <div class="oc-right">{{stats.recommendedAction}}</div>
+      </div>
+
+      {{#if metadata.options.includeOutstandingItems}}
+      {{#if outstandingItems.length}}
+      <div class="h2"><span class="h2-bar"></span>OUTSTANDING ITEMS SUMMARY ({{outstandingItems.length}})</div>
+      {{#each outstandingItems}}
+      <div class="oi">
+        <div class="oi-head">
+          <span class="oi-num">ITEM {{this.itemNumber}}</span>
+          <span class="oi-cat">{{this.sectionTitle}}</span>
+        </div>
+        <div class="oi-title">{{this.questionLabel}}</div>
+        <div class="oi-flag {{#if this.isCrit}}crit{{/if}}">
+          <span class="ic">{{this.status.icon}}</span>{{this.status.displayLabel}}
+        </div>
+        <div class="oi-action">REQUIRED ACTION: {{this.requiredAction}}</div>
+      </div>
+      {{/each}}
+      {{/if}}
+      {{/if}}
     </div>
 
-    <p style="margin-bottom: 18px; color: var(--slate); font-size: 12px; line-height: 1.6;">
-      {{introductionText}}
-    </p>
+    <div class="pg-foot">
+      <div>{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
+      <div>Report ID: {{metadata.reportId}}</div>
+    </div>
+  </section>
 
-    <!-- METRICS DASHBOARD GRID -->
-    <div class="dashboard-grid">
-      <div class="metric-card primary">
-        <div class="metric-number">{{stats.totalChecks}}</div>
-        <div class="metric-label">TOTAL CHECKS</div>
+  <!-- INSPECTION DETAILS SECTIONS -->
+  <section class="page">
+    <div class="pg-head">
+      <div class="ph-left">
+        {{#if logoUri}}<img class="ph-logo" src="{{logoUri}}" alt="Logo">{{/if}}
+        <span class="ph-title">INSPECTION DETAILS</span>
       </div>
-      <div class="metric-card success">
-        <div class="metric-number">{{stats.completedCount}}</div>
-        <div class="metric-label">COMPLETED</div>
-      </div>
-      <div class="metric-card warning">
-        <div class="metric-number">{{stats.attentionCount}}</div>
-        <div class="metric-label">ATTENTION REQ.</div>
-      </div>
-      <div class="metric-card danger">
-        <div class="metric-number">{{stats.cannotInstallCount}}</div>
-        <div class="metric-label">CANNOT INSTALL</div>
-      </div>
+      <div class="ph-ref">REF: {{metadata.reportId}}</div>
     </div>
 
-    <!-- OUTCOME BANNER -->
-    <div class="outcome-banner {{stats.overallStatusClass}}">
-      <div>
-        <div class="outcome-title">OVERALL INSPECTION OUTCOME</div>
-        <div class="outcome-status {{stats.overallStatusClass}}">{{stats.overallStatus}}</div>
-      </div>
-      <div class="outcome-action">
-        <strong>ACTION REQUIRED:</strong> {{stats.recommendedAction}}
-      </div>
-    </div>
-
-    {{#if metadata.options.includeOutstandingItems}}
-    {{#if outstandingItems.length}}
-    <!-- OUTSTANDING ITEMS SUMMARY -->
-    <div class="section-header" style="margin-top: 24px;">
-      <div class="section-title" style="color: var(--amber);">
-        <div class="section-title-tag" style="background-color: var(--amber);"></div>
-        OUTSTANDING ITEMS SUMMARY ({{outstandingItems.length}})
-      </div>
-    </div>
-
-    {{#each outstandingItems}}
-    <div class="outstanding-card">
-      <div class="outstanding-header">
-        <span class="outstanding-num">ITEM {{this.itemNumber}}</span>
-        <span class="outstanding-sec">{{this.sectionTitle}}</span>
-      </div>
-      <div class="outstanding-question">{{this.questionLabel}}</div>
-      <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px;">
-        <span class="badge {{this.status.badgeClass}}">
-          <span class="badge-icon">{{this.status.icon}}</span> {{this.status.displayLabel}}
-        </span>
-      </div>
-      <div class="outstanding-action">
-        <strong>REQUIRED ACTION:</strong> {{this.requiredAction}}
-      </div>
-    </div>
-    {{/each}}
-    {{/if}}
-    {{/if}}
-
-    <div class="page-footer">
-      <span>{{metadata.property.fullAddress}}</span>
-      <span>Report ID: {{metadata.reportId}}</span>
-    </div>
-  </div>
-
-  <!-- INSPECTION SECTIONS -->
-  <div class="page">
-    <div class="page-header">
-      <div class="header-brand">{{metadata.branding.companyName}} &bull; INSPECTION DETAILS</div>
-      <div class="header-ref">REF: {{metadata.reportId}}</div>
-    </div>
-
-    {{#each sections}}
-    <div class="report-card">
-      <div class="card-title">{{this.title}}</div>
-      {{#each this.questions}}
-      <div class="question-row {{#if this.isFullWidth}}full-width{{/if}}">
-        <div class="question-label">{{this.label}}</div>
-        <div class="question-response">
-          {{#if this.isFullWidth}}
-            <div>{{#if this.rawResponse}}{{this.rawResponse}}{{else}}None recorded.{{/if}}</div>
+    <div class="pg-body">
+      {{#each sections}}
+      <div class="section">
+        <div class="sec-head">{{this.title}}</div>
+        <div class="sec-body">
+          {{#each this.questions}}
+          {{#if this.isNote}}
+          <div class="noterow">
+            <div class="notelabel">{{this.label}}</div>
+            <div class="notebox">{{#if this.rawResponse}}{{this.rawResponse}}{{else}}None recorded.{{/if}}</div>
+          </div>
           {{else}}
-            <span class="badge {{this.status.badgeClass}}">
-              <span class="badge-icon">{{this.status.icon}}</span> {{this.status.displayLabel}}
-            </span>
+          <div class="row">
+            <div class="q">{{this.label}}</div>
+            <div class="a">
+              <span class="{{this.status.badgeClass}}">
+                {{#if this.status.icon}}<span class="ic">{{this.status.icon}}</span>{{/if}}
+                {{this.status.displayLabel}}
+              </span>
+            </div>
+          </div>
           {{/if}}
+          {{/each}}
         </div>
       </div>
       {{/each}}
-    </div>
-    {{/each}}
 
-    {{#if generalNotesList.length}}
-    <div class="notes-box">
-      <h3 style="font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 8px; text-transform: uppercase;">
-        GENERAL INSPECTION NOTES & COMMENTS
-      </h3>
-      <ul>
-        {{#each generalNotesList}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
+      {{#if generalNotesList.length}}
+      <div class="section">
+        <div class="sec-head">GENERAL INSPECTION NOTES &amp; COMMENTS</div>
+        <div class="sec-body">
+          <ul class="genlist">
+            {{#each generalNotesList}}
+            <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+      {{/if}}
     </div>
-    {{/if}}
 
-    <div class="page-footer">
-      <span>{{metadata.property.fullAddress}}</span>
-      <span>Report ID: {{metadata.reportId}}</span>
+    <div class="pg-foot">
+      <div>{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
+      <div>Report ID: {{metadata.reportId}}</div>
     </div>
-  </div>
+  </section>
 
   {{#if metadata.options.includePhotographs}}
   {{#if galleryPages.length}}
   <!-- PHOTOGRAPHIC EVIDENCE DIVIDER -->
-  <div class="page">
-    <div class="page-header">
-      <div class="header-brand">{{metadata.branding.companyName}} &bull; PHOTOGRAPHIC EVIDENCE</div>
-      <div class="header-ref">REF: {{metadata.reportId}}</div>
+  <section class="page">
+    <div class="pg-head">
+      <div class="ph-left">
+        {{#if logoUri}}<img class="ph-logo" src="{{logoUri}}" alt="Logo">{{/if}}
+        <span class="ph-title">PHOTOGRAPHIC EVIDENCE</span>
+      </div>
+      <div class="ph-ref">REF: {{metadata.reportId}}</div>
     </div>
 
-    <div class="gallery-divider">
-      <h1>SITE PHOTOGRAPHY</h1>
-      <p>Inspection Photographic Evidence & Detailed Observations</p>
-      <div style="margin-top: 20px; font-size: 14px; color: var(--electric-blue); font-weight: 700;">
-        Total Photos Attached: {{stats.totalPhotos}}
+    <div class="pg-body">
+      <div class="photo-cover">
+        <div class="pc-inner">
+          <h2 class="pc-title">SITE PHOTOGRAPHY</h2>
+          <div class="pc-sub">Inspection Photographic Evidence &amp; Detailed Observations</div>
+          <div class="pc-count">Total Photos Attached: {{stats.totalPhotos}}</div>
+        </div>
       </div>
     </div>
 
-    <div class="page-footer">
-      <span>{{metadata.property.fullAddress}}</span>
-      <span>Report ID: {{metadata.reportId}}</span>
+    <div class="pg-foot">
+      <div>{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
+      <div>Report ID: {{metadata.reportId}}</div>
     </div>
-  </div>
+  </section>
 
   <!-- GALLERY PAGES -->
   {{#each galleryPages}}
-  <div class="page">
-    <div class="page-header">
-      <div class="header-brand">{{../metadata.branding.companyName}} &bull; PHOTOGRAPHIC EVIDENCE</div>
-      <div class="header-ref">PAGE {{this.pageNumber}} OF {{../galleryPages.length}}</div>
+  <section class="page">
+    <div class="pg-head">
+      <div class="ph-left">
+        {{#if ../logoUri}}<img class="ph-logo" src="{{../logoUri}}" alt="Logo">{{/if}}
+        <span class="ph-title">PHOTOGRAPHIC EVIDENCE</span>
+      </div>
+      <div class="ph-ref">PAGE {{this.pageNumber}} OF {{../galleryPages.length}}</div>
     </div>
 
-    <div class="photo-grid">
+    <div class="pg-body">
       {{#each this.photos}}
       <div class="photo-card">
-        <div class="photo-img-container">
-          <img src="{{this.base64DataUri}}" class="photo-img" alt="Photo {{this.sequence}}" />
-        </div>
-        <div class="photo-meta">
-          <span class="photo-tag">PHOTO {{#if this.sequence}}{{this.sequence}}{{else}}--{{/if}}</span>
-          {{#if this.section}}<span class="photo-sec">{{this.section}}</span>{{/if}}
-        </div>
-        {{#if this.caption}}
-        <div class="photo-caption">
-          <strong>Caption:</strong> {{this.caption}}
-        </div>
-        {{/if}}
+        <img src="{{this.base64DataUri}}" alt="Photo {{this.sequence}}" />
+        <div class="photo-label">PHOTO {{#if this.sequence}}{{this.sequence}}{{else}}--{{/if}}</div>
       </div>
       {{/each}}
     </div>
 
-    <div class="page-footer">
-      <span>{{../metadata.property.fullAddress}}</span>
-      <span>Report ID: {{../metadata.reportId}}</span>
+    <div class="pg-foot">
+      <div>{{#if ../metadata.property.fullAddress}}{{../metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
+      <div>Report ID: {{../metadata.reportId}}</div>
     </div>
-  </div>
+  </section>
   {{/each}}
   {{/if}}
   {{/if}}

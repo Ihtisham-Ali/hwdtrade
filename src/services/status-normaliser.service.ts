@@ -43,7 +43,7 @@ export class StatusNormaliserService {
         category: "completed",
         displayLabel: "Completed",
         icon: "✓",
-        badgeClass: "badge-success",
+        badgeClass: "badge b-done",
         isCompliant: true,
         requiresAction: false,
       };
@@ -56,7 +56,7 @@ export class StatusNormaliserService {
         category: "correct",
         displayLabel: "Correct",
         icon: "✓",
-        badgeClass: "badge-success",
+        badgeClass: "badge b-done",
         isCompliant: true,
         requiresAction: false,
       };
@@ -69,14 +69,20 @@ export class StatusNormaliserService {
       lower.includes("fix") ||
       lower.includes("attention") ||
       lower.includes("incomplete") ||
-      lower.includes("repair")
+      lower.includes("repair") ||
+      lower.includes("not complete") ||
+      lower.includes("not correct") ||
+      lower.includes("working on it") ||
+      lower.includes("wrong for") ||
+      lower.includes("needs to be") ||
+      lower.includes("required")
     ) {
       return {
         rawAnswer: trimmed,
         category: "attention",
         displayLabel: trimmed,
         icon: "!",
-        badgeClass: "badge-warning",
+        badgeClass: "badge b-attn",
         isCompliant: false,
         requiresAction: true,
       };
@@ -94,8 +100,8 @@ export class StatusNormaliserService {
         rawAnswer: trimmed,
         category: "cannot_install",
         displayLabel: trimmed,
-        icon: "×",
-        badgeClass: "badge-danger",
+        icon: "✕",
+        badgeClass: "badge b-crit",
         isCompliant: false,
         requiresAction: true,
       };
@@ -114,7 +120,7 @@ export class StatusNormaliserService {
         category: "not_required",
         displayLabel: trimmed,
         icon: "—",
-        badgeClass: "badge-neutral",
+        badgeClass: "badge b-na",
         isCompliant: true,
         requiresAction: false,
       };
@@ -126,20 +132,20 @@ export class StatusNormaliserService {
         rawAnswer: trimmed,
         category: "ordered",
         displayLabel: trimmed,
-        icon: "●",
-        badgeClass: "badge-info",
+        icon: "",
+        badgeClass: "badge b-info",
         isCompliant: true,
         requiresAction: false,
       };
     }
 
-    // 7. Informational / Descriptive (e.g. "Conduit Visible", "Water Onsite", "Set Inside Stud Cavity", "Less Than 100mm", "1x Pier to Footing")
+    // 7. Informational / Descriptive
     return {
       rawAnswer: trimmed,
       category: "informational",
       displayLabel: trimmed,
-      icon: "ℹ",
-      badgeClass: "badge-secondary",
+      icon: "",
+      badgeClass: "badge b-info",
       isCompliant: true,
       requiresAction: false,
     };
