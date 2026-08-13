@@ -62,38 +62,11 @@ export class StatusNormaliserService {
       };
     }
 
-    // 3. Partially Completed / Attention Required
-    if (
-      lower.includes("partially") ||
-      lower.includes("partial") ||
-      lower.includes("fix") ||
-      lower.includes("attention") ||
-      lower.includes("incomplete") ||
-      lower.includes("repair") ||
-      lower.includes("not complete") ||
-      lower.includes("not correct") ||
-      lower.includes("working on it") ||
-      lower.includes("wrong for") ||
-      lower.includes("needs to be") ||
-      lower.includes("required")
-    ) {
-      return {
-        rawAnswer: trimmed,
-        category: "attention",
-        displayLabel: trimmed,
-        icon: "!",
-        badgeClass: "badge b-attn",
-        isCompliant: false,
-        requiresAction: true,
-      };
-    }
-
-    // 4. Cannot Install / Failed / Urgent Issue
+    // 3. Cannot Install / Failed / Urgent Blocker
     if (
       lower.includes("cannot install") ||
       lower.includes("failed") ||
       lower.includes("blocked") ||
-      lower.includes("issue") ||
       lower.includes("no access")
     ) {
       return {
@@ -107,7 +80,7 @@ export class StatusNormaliserService {
       };
     }
 
-    // 5. Not Required / N/A
+    // 4. Not Required / N/A
     if (
       lower === "not required" ||
       lower === "n/a" ||
@@ -123,6 +96,31 @@ export class StatusNormaliserService {
         badgeClass: "badge b-na",
         isCompliant: true,
         requiresAction: false,
+      };
+    }
+
+    // 5. Partially Completed / Attention Required
+    if (
+      lower.includes("partially") ||
+      lower.includes("partial") ||
+      lower.includes("fix") ||
+      lower.includes("attention") ||
+      lower.includes("incomplete") ||
+      lower.includes("repair") ||
+      lower.includes("not complete") ||
+      lower.includes("not correct") ||
+      lower.includes("working on it") ||
+      lower.includes("wrong for") ||
+      lower.includes("needs to be")
+    ) {
+      return {
+        rawAnswer: trimmed,
+        category: "attention",
+        displayLabel: trimmed,
+        icon: "!",
+        badgeClass: "badge b-attn",
+        isCompliant: false,
+        requiresAction: true,
       };
     }
 

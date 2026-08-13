@@ -86,7 +86,7 @@
       {{#if metadata.options.includeOutstandingItems}}
       {{#if outstandingItems.length}}
       <div class="h2"><span class="h2-bar"></span>OUTSTANDING ITEMS SUMMARY ({{outstandingItems.length}})</div>
-      {{#each outstandingItems}}
+      {{#each summaryOutstandingItems}}
       <div class="oi">
         <div class="oi-head">
           <span class="oi-num">ITEM {{this.itemNumber}}</span>
@@ -109,18 +109,19 @@
     </div>
   </section>
 
-  <!-- INSPECTION DETAILS SECTIONS -->
+  <!-- INSPECTION DETAILS PAGES -->
+  {{#each detailPages}}
   <section class="page">
     <div class="pg-head">
       <div class="ph-left">
-        {{#if logoUri}}<img class="ph-logo" src="{{logoUri}}" alt="Logo">{{/if}}
+        {{#if ../logoUri}}<img class="ph-logo" src="{{../logoUri}}" alt="Logo">{{/if}}
         <span class="ph-title">INSPECTION DETAILS</span>
       </div>
-      <div class="ph-ref">REF: {{metadata.reportId}}</div>
+      <div class="ph-ref">REF: {{../metadata.reportId}}</div>
     </div>
 
     <div class="pg-body">
-      {{#each sections}}
+      {{#each this.sections}}
       <div class="section">
         <div class="sec-head">{{this.title}}</div>
         <div class="sec-body">
@@ -146,25 +147,28 @@
       </div>
       {{/each}}
 
-      {{#if generalNotesList.length}}
+      {{#if @last}}
+      {{#if ../generalNotesList.length}}
       <div class="section">
         <div class="sec-head">GENERAL INSPECTION NOTES &amp; COMMENTS</div>
         <div class="sec-body">
           <ul class="genlist">
-            {{#each generalNotesList}}
+            {{#each ../generalNotesList}}
             <li>{{this}}</li>
             {{/each}}
           </ul>
         </div>
       </div>
       {{/if}}
+      {{/if}}
     </div>
 
     <div class="pg-foot">
-      <div>{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
-      <div>Report ID: {{metadata.reportId}}</div>
+      <div>{{#if ../metadata.property.fullAddress}}{{../metadata.property.fullAddress}}{{else}}HWD Trade Site Inspection Report{{/if}}</div>
+      <div>Report ID: {{../metadata.reportId}}</div>
     </div>
   </section>
+  {{/each}}
 
   {{#if metadata.options.includePhotographs}}
   {{#if galleryPages.length}}

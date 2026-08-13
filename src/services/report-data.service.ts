@@ -47,12 +47,19 @@ export interface SummaryStatsViewModel {
   recommendedAction: string;
 }
 
+export interface DetailPageViewModel {
+  pageNumber: number;
+  sections: SectionViewModel[];
+}
+
 export interface ReportViewModel {
   metadata: InspectionMetadata;
   template: InspectionTemplateConfig;
   stats: SummaryStatsViewModel;
   sections: SectionViewModel[];
+  detailPages: DetailPageViewModel[];
   outstandingItems: OutstandingItemViewModel[];
+  summaryOutstandingItems: OutstandingItemViewModel[];
   coverImageUri?: string;
   coverBgFlatUri?: string;
   logoUri?: string;
@@ -242,12 +249,24 @@ export class ReportDataService {
       }
     }
 
+    // Detail Pages Paging (2 sections per page for clean A4 pagination)
+    const detailPages: DetailPageViewModel[] = [];
+    for (let i = 0; i < sections.length; i += 2) {
+      const chunk = sections.slice(i, i + 2);
+      detailPages.push({
+        pageNumber: Math.floor(i / 2) + 1,
+        sections: chunk,
+      });
+    }
+
     return {
       metadata,
       template,
       stats,
       sections,
+      detailPages,
       outstandingItems,
+      summaryOutstandingItems: outstandingItems.slice(0, 2),
       coverImageUri,
       coverBgFlatUri,
       logoUri,
