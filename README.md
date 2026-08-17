@@ -129,7 +129,11 @@ LOG_LEVEL=info
 
 ---
 
-## Primary API Endpoint
+---
+
+## API Endpoints
+
+### 1. Generate Report (`POST /api/v1/inspection-reports/generate`)
 
 ```http
 POST /api/v1/inspection-reports/generate
@@ -138,14 +142,14 @@ Authorization: Bearer YOUR_SECURE_API_KEY
 Idempotency-Key: HSC1-4106-20260402
 ```
 
-### Request Fields
+#### Request Fields
 
 * `metadata` (Text/JSON string): JSON containing property, inspector, template ID, and dynamic answers.
 * `images` (Binary file, repeated): One or multiple binary image files downloaded by Make.com.
 * `logo` *(optional binary file)*: Company logo image.
 * `coverImage` *(optional binary file)*: Custom hero image for cover page.
 
-### JSON Response Example
+#### JSON Response Example
 
 ```json
 {
@@ -163,6 +167,21 @@ Idempotency-Key: HSC1-4106-20260402
   "warnings": []
 }
 ```
+
+### 2. Download Report by ID / Filename (`GET /api/v1/inspection-reports/download/:fileName`)
+
+Download or preview a specific generated PDF report.
+
+### 3. Get / Download Latest Generated Report
+
+* **Get Metadata (JSON):** `GET /api/v1/inspection-reports/latest`
+* **Direct Binary PDF Stream:** `GET /api/v1/inspection-reports/latest/download` (or `GET /api/v1/inspection-reports/latest?format=binary`)
+
+Returns the most recently created inspection report automatically.
+
+### 4. List Templates (`GET /api/v1/inspection-reports/templates`)
+
+Returns all available inspection templates.
 
 ---
 

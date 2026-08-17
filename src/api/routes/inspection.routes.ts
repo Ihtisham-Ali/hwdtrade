@@ -127,4 +127,45 @@ export async function inspectionRoutes(fastify: FastifyInstance) {
     const templates = TemplateLoader.listAvailableTemplates();
     return reply.send({ success: true, templates });
   });
+
+  // 5. Latest Generated Report Information & Download
+  fastify.get("/api/v1/inspection-reports/latest", async (req: FastifyRequest, reply: FastifyReply) => {
+    const latest = StorageService.getLatestPdf();
+
+    if (!latest) {
+      return reply.status(404).send({ success: false, error: { message: "No generated reports found." } });
+    }
+
+    const acceptHeader = req.headers.accept || "";
+    const formatQuery = (req.query as any)?.format;
+
+    if (acceptHeader.includes("application/pdf") || formatQuery === "binary") {
+      const stream = fs.createReadStream(latest.filePath);
+      reply.header("Content-Type", "application/pdf");
+      reply.header("Content-Disposition", `inline; filename="${latest.fileName}"`);
+      return reply.send(stream);
+    }
+
+    return reply.send({
+      success: true,
+      fileName: latest.fileName,
+      pdfUrl: `${req.protocol}://${req.hostname}/api/v1/inspection-reports/download/${latest.fileName}`,
+      downloadUrl: `${req.protocol}://${req.hostname}/api/v1/inspection-reports/latest/download`,
+      generatedAt: latest.mtime.toISOString(),
+    });
+  });
+
+  // 6. Direct Binary Stream of Latest Generated Report
+  fastify.get("/api/v1/inspection-reports/latest/download", async (req: FastifyRequest, reply: FastifyReply) => {
+    const latest = StorageService.getLatestPdf();
+
+    if (!latest) {
+      return reply.status(404).send({ success: false, error: { message: "No generated reports found." } });
+    }
+
+    const stream = fs.createReadStream(latest.filePath);
+    reply.header("Content-Type", "application/pdf");
+    reply.header("Content-Disposition", `inline; filename="${latest.fileName}"`);
+    return reply.send(stream);
+  });
 }
