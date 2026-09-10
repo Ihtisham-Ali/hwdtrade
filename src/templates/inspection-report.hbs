@@ -38,7 +38,7 @@
       </div>
       <div class="cover-foot">
         <div>CONFIDENTIAL REPORT &bull; PREPARED FOR BUILDER / CLIENT</div>
-        <div class="status-red">STATUS: {{stats.overallStatus}}</div>
+        <div class="{{#if stats.isCompliant}}status-green{{else}}status-red{{/if}}">STATUS: {{stats.overallStatus}}</div>
       </div>
     </div>
   </section>
@@ -77,7 +77,7 @@
         </div>
       </div>
 
-      <div class="outcome">
+      <div class="outcome {{#if stats.isCompliant}}compliant{{else}}non-compliant{{/if}}">
         <div class="oc-left">
           <div class="oc-l">OVERALL INSPECTION OUTCOME</div>
           <div class="oc-v">{{stats.overallStatus}}</div>

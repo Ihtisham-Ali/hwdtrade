@@ -46,6 +46,7 @@ export interface SummaryStatsViewModel {
   overallStatus: "COMPLIANT" | "ATTENTION REQUIRED" | "ACTION REQUIRED";
   overallStatusClass: string;
   recommendedAction: string;
+  isCompliant: boolean;
 }
 
 export interface DetailPageViewModel {
@@ -172,15 +173,18 @@ export class ReportDataService {
     let overallStatus: "COMPLIANT" | "ATTENTION REQUIRED" | "ACTION REQUIRED" = "COMPLIANT";
     let overallStatusClass = "status-success";
     let recommendedAction = "Site is compliant. Proceed to next construction phase.";
+    let isCompliant = true;
 
     if (cannotInstallCount > 0) {
       overallStatus = "ACTION REQUIRED";
       overallStatusClass = "status-danger";
       recommendedAction = "Critical installation blockers identified. Complete outstanding actions immediately.";
+      isCompliant = false;
     } else if (attentionCount > 0) {
       overallStatus = "ATTENTION REQUIRED";
       overallStatusClass = "status-warning";
       recommendedAction = "Minor non-compliant items identified. Rectify before scheduling next site check.";
+      isCompliant = false;
     }
 
     const stats: SummaryStatsViewModel = {
@@ -195,6 +199,7 @@ export class ReportDataService {
       overallStatus,
       overallStatusClass,
       recommendedAction,
+      isCompliant,
     };
 
     // Cover Background Flat: Default flat cover background

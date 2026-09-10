@@ -1,6 +1,6 @@
 /* HWD Trade inspection report — B&W formatting styles */
 * { margin:0; padding:0; box-sizing:border-box; }
-:root{ --ink:#111; --ink2:#333; --mut:#666; --mut2:#888; --line:#dcdcdc; --line2:#e8e8e8; --bg:#f6f6f6; --bg2:#fafafa; --red:#c62828; --redbg:#fdeaea; }
+:root{ --ink:#111; --ink2:#333; --mut:#666; --mut2:#888; --line:#dcdcdc; --line2:#e8e8e8; --bg:#f6f6f6; --bg2:#fafafa; --red:#c62828; --redbg:#fdeaea; --green:#168038; --greenbg:#edf7ed; }
 html,body{ background:#e0e0e0; font-family:'Helvetica Neue',Arial,Helvetica,sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; }
 .page{ width:794px; height:1123px; overflow:hidden; background:#fff; margin:0 auto; position:relative; padding:52px 60px 78px; page-break-after:always; }
 .page:last-child{ page-break-after:auto; }
@@ -27,6 +27,10 @@ html,body{ background:#e0e0e0; font-family:'Helvetica Neue',Arial,Helvetica,sans
 .tile-l{ font-size:9.5px; letter-spacing:1px; color:var(--mut); margin-top:8px; font-weight:600; }
 /* ---- outcome ---- */
 .outcome{ display:flex; gap:20px; border:1px solid var(--line); border-left:6px solid var(--red); border-radius:8px; padding:18px 22px; background:var(--redbg); margin-bottom:26px; align-items:center; }
+.outcome.compliant{ border-left:6px solid var(--green); background:var(--greenbg); }
+.outcome.compliant .oc-v{ color:var(--green); }
+.outcome.non-compliant{ border-left:6px solid var(--red); background:var(--redbg); }
+.outcome.non-compliant .oc-v{ color:var(--red); }
 .oc-l{ font-size:9.5px; letter-spacing:1.2px; color:var(--mut); font-weight:600; }
 .oc-v{ font-size:19px; font-weight:800; color:var(--red); margin-top:4px; }
 .oc-right{ font-size:12px; line-height:1.6; color:var(--ink2); text-align:right; margin-left:auto; max-width:52%; }
@@ -79,7 +83,8 @@ html,body{ background:#e0e0e0; font-family:'Helvetica Neue',Arial,Helvetica,sans
 .cc-l{ font-size:9.5px; letter-spacing:1.3px; color:#b9b9b9; font-weight:600; }
 .cc-v{ font-size:15px; color:#fff; margin-top:5px; font-weight:500; }
 .cover-foot{ display:flex; justify-content:space-between; margin-top:34px; padding-top:18px; border-top:1px solid rgba(255,255,255,.2); font-size:9.5px; letter-spacing:1px; color:#c7c7c7; }
-.status-red{ color:#ffffff; font-weight:700; }
+.status-red{ color:#f87171; font-weight:700; }
+.status-green{ color:#4ade80; font-weight:700; }
 /* ---- photo cover ---- */
 .photo-cover{ background:#0d0d0d; border-radius:16px; height:940px; display:flex; align-items:center; justify-content:center; text-align:center; }
 .pc-title{ font-size:46px; font-weight:800; letter-spacing:2px; color:#fff; }
