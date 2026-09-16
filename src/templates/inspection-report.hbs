@@ -34,7 +34,7 @@
         <div class="cc"><div class="cc-l">CHECK DATE</div><div class="cc-v">{{formattedDate}}</div></div>
         <div class="cc"><div class="cc-l">SITE CHECK REFERENCE</div><div class="cc-v">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}HSC1 - Check 1{{/if}}</div></div>
         <div class="cc"><div class="cc-l">REPORT ID</div><div class="cc-v">{{metadata.reportId}}</div></div>
-        <div class="cc"><div class="cc-l">INSPECTOR</div><div class="cc-v">{{#if metadata.inspector.name}}{{metadata.inspector.name}}{{else}}Site Inspector{{/if}}</div></div>
+        <div class="cc"><div class="cc-l">SITE INSPECTOR</div><div class="cc-v">{{#if metadata.inspector.name}}{{metadata.inspector.name}}{{else}}Site Inspector{{/if}}</div></div>
       </div>
       <div class="cover-foot">
         <div>CONFIDENTIAL REPORT &bull; PREPARED FOR BUILDER / CLIENT</div>
@@ -103,6 +103,19 @@
       {{/each}}
       {{/if}}
       {{/if}}
+
+      {{#if generalNotesList.length}}
+      <div class="section">
+        <div class="sec-head">GENERAL INSPECTION NOTES &amp; COMMENTS</div>
+        <div class="sec-body">
+          <ul class="genlist">
+            {{#each generalNotesList}}
+            <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+      {{/if}}
     </div>
 
     <div class="pg-foot">
@@ -148,21 +161,6 @@
         </div>
       </div>
       {{/each}}
-
-      {{#if @last}}
-      {{#if ../generalNotesList.length}}
-      <div class="section">
-        <div class="sec-head">GENERAL INSPECTION NOTES &amp; COMMENTS</div>
-        <div class="sec-body">
-          <ul class="genlist">
-            {{#each ../generalNotesList}}
-            <li>{{this}}</li>
-            {{/each}}
-          </ul>
-        </div>
-      </div>
-      {{/if}}
-      {{/if}}
     </div>
 
     <div class="pg-foot">
