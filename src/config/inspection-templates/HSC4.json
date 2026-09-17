@@ -1,0 +1,73 @@
+{
+  "templateId": "HSC4",
+  "title": "Post Lower Hebel Check - Site Check 4",
+  "version": "1.0.0",
+  "description": "Standard Site Check 4 inspection template for Post Lower Hebel Check",
+  "sections": [
+    {
+      "id": "alert-supervisor",
+      "title": "Alert Supervisor",
+      "questions": [
+        { "id": "soil-height", "label": "Soil Height", "responseKey": "soilHeight" },
+        { "id": "slab-overhanging", "label": "Slab Overhanging", "responseKey": "slabOverhanging" }
+      ]
+    },
+    {
+      "id": "hebel-installation",
+      "title": "Hebel Installation",
+      "questions": [
+        { "id": "hebel-complete", "label": "Hebel Complete", "responseKey": "hebelComplete" },
+        { "id": "door-sills-installed", "label": "Doors Sills Installed", "responseKey": "doorSillsInstalled" },
+        { "id": "door-sills-heads-straight", "label": "Doors Sills & Heads Straight", "responseKey": "doorSillsHeadsStraight" },
+        { "id": "window-sills-heads-straight", "label": "Window Sills & Heads Straight", "responseKey": "windowSillsHeadsStraight" },
+        { "id": "hebel-blocks", "label": "Hebel Blocks", "responseKey": "hebelBlocks" },
+        { "id": "slider-door-sills-installed", "label": "Slider Door Sills Installed", "responseKey": "sliderDoorSillsInstalled" }
+      ]
+    },
+    {
+      "id": "hebel-panel-finish",
+      "title": "Hebel Panel Finish",
+      "questions": [
+        { "id": "corners-straight-rasped", "label": "Corners Straight/Rasped", "responseKey": "cornersStraightRasped" },
+        { "id": "cj-spacing", "label": "CJ Spacing", "responseKey": "cjSpacing" }
+      ]
+    },
+    {
+      "id": "sealing-patching",
+      "title": "Sealing & Patching",
+      "questions": [
+        { "id": "cj-sealing", "label": "CJ Sealing", "responseKey": "cjSealing" },
+        { "id": "window-sealing", "label": "Window Sealing", "responseKey": "windowSealing" },
+        { "id": "patching", "label": "Patching", "responseKey": "patching" },
+        { "id": "sealing-power-box", "label": "Sealing around Power Box", "responseKey": "sealingPowerBox" },
+        { "id": "air-vents-cut-tight", "label": "Air Vents Cut Tight", "responseKey": "airVentsCutTight" }
+      ]
+    },
+    {
+      "id": "foam-paint",
+      "title": "Foam & Paint",
+      "questions": [
+        { "id": "expanding-foam-holes", "label": "Expanding Foam to Holes", "responseKey": "expandingFoamHoles" },
+        { "id": "expanding-foam-soffit", "label": "Expanding Foam to Soffit", "responseKey": "expandingFoamSoffit" },
+        { "id": "black-paint", "label": "Black Paint", "responseKey": "blackPaint" }
+      ]
+    },
+    {
+      "id": "cleaning-of-site",
+      "title": "Cleaning of Site",
+      "questions": [
+        { "id": "cleaning-slabs", "label": "Cleaning of Slabs", "responseKey": "cleaningSlabs" },
+        { "id": "cleaning-site", "label": "Cleaning of Site", "responseKey": "cleaningSite" },
+        { "id": "cleaning-garage", "label": "Cleaning of Garage", "responseKey": "cleaningGarage" }
+      ]
+    },
+    {
+      "id": "quality-of-install",
+      "title": "Quality of Install",
+      "questions": [
+        { "id": "job-quality", "label": "Job Quality", "responseKey": "jobQuality" },
+        { "id": "return-to-site", "label": "Return to Site", "responseKey": "returnToSite" }
+      ]
+    }
+  ]
+}

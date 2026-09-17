@@ -1,0 +1,31 @@
+{
+  "templateId": "RSC1",
+  "title": "Pre Upper Render Application - Site Check 1",
+  "version": "1.0.0",
+  "description": "Standard Render Site Check 1 inspection template for Pre Upper Render Application",
+  "sections": [
+    {
+      "id": "areas-for-hebel-installer",
+      "title": "Areas for Hebel Installer",
+      "description": "Send to Hebel Installer if not completed",
+      "questions": [
+        { "id": "upper-hebel-installation", "label": "Upper Hebel Installation", "responseKey": "upperHebelInstallation" },
+        { "id": "upper-hebel-installation-notes", "label": "Notes", "responseKey": "upperHebelInstallationNotes", "type": "notes", "isFullWidth": true }
+      ]
+    },
+    {
+      "id": "areas-for-supervisor",
+      "title": "Areas to Send to the Supervisor",
+      "questions": [
+        { "id": "upper-cladding-completed", "label": "Upper Cladding Completed", "responseKey": "upperCladdingCompleted" },
+        { "id": "upper-cladding-notes", "label": "Cladding Notes", "responseKey": "upperCladdingNotes", "type": "notes", "isFullWidth": true },
+        { "id": "upper-soffits-completed", "label": "Upper Soffits Completed", "responseKey": "upperSoffitsCompleted" },
+        { "id": "upper-soffits-notes", "label": "Soffits Notes", "responseKey": "upperSoffitsNotes", "type": "notes", "isFullWidth": true },
+        { "id": "upper-blueboard-completed", "label": "Upper Blueboard Completed", "responseKey": "upperBlueboardCompleted" },
+        { "id": "upper-blueboard-notes", "label": "Blueboard Notes", "responseKey": "upperBlueboardNotes", "type": "notes", "isFullWidth": true },
+        { "id": "scaffold-to-frame", "label": "Scaffold to Frame", "responseKey": "scaffoldToFrame" },
+        { "id": "scaffold-notes", "label": "Scaffold Notes", "responseKey": "scaffoldNotes", "type": "notes", "isFullWidth": true }
+      ]
+    }
+  ]
+}
