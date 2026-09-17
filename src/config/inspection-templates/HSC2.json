@@ -1,0 +1,112 @@
+{
+  "templateId": "HSC2",
+  "title": "Pre Upper Hebel Install - Site Check 2",
+  "version": "1.0.0",
+  "description": "Standard Site Check 2 inspection template for Pre Upper Hebel Install",
+  "sections": [
+    {
+      "id": "utilities-services",
+      "title": "Utilities & Services",
+      "questions": [
+        {
+          "id": "power-installed",
+          "label": "Is the Power Installed to the House and the Power is On?",
+          "responseKey": "powerInstalled"
+        },
+        {
+          "id": "water-installed",
+          "label": "Is the Water installed to the House and Water is Running?",
+          "responseKey": "waterInstalled"
+        },
+        {
+          "id": "bin-empty",
+          "label": "Does the Bin need to be Emptied?",
+          "responseKey": "binEmptyingRequired"
+        },
+        {
+          "id": "site-clean",
+          "label": "Is a Site Clean required?",
+          "responseKey": "siteCleanRequired"
+        }
+      ]
+    },
+    {
+      "id": "scaffold-edge-protection",
+      "title": "Scaffold/Edge Protection",
+      "questions": [
+        {
+          "id": "scaffold-installation-completed",
+          "label": "Has the Scaffold Installation been completed?",
+          "responseKey": "scaffoldInstallationCompleted"
+        },
+        {
+          "id": "scaffold-frame-clearance",
+          "label": "Is there enough room between the Scaffold and Frame to install Hebel?",
+          "responseKey": "scaffoldFrameClearance"
+        },
+        {
+          "id": "edge-protection-removed",
+          "label": "Has the Edge Protection been removed?",
+          "responseKey": "edgeProtectionRemoved"
+        },
+        {
+          "id": "tower-required",
+          "label": "Is a Tower required (Loading bay with standards for Hebel winch)?",
+          "responseKey": "towerRequired"
+        }
+      ]
+    },
+    {
+      "id": "sarking-windows-doors-facia",
+      "title": "Sarking, Windows, Doors & Facia",
+      "questions": [
+        {
+          "id": "sarking-installed",
+          "label": "Is the Sarking 100% Installed?",
+          "responseKey": "sarkingInstalled"
+        },
+        {
+          "id": "windows-installed",
+          "label": "Are the Windows Installed?",
+          "responseKey": "windowsInstalled"
+        },
+        {
+          "id": "window-reveals",
+          "label": "Are the Window Reveals Correct?",
+          "responseKey": "windowReveals"
+        },
+        {
+          "id": "doors-installed",
+          "label": "Are the Doors Installed?",
+          "responseKey": "doorsInstalled"
+        },
+        {
+          "id": "door-jamb-reveals",
+          "label": "Are the Door Jamb Reveals Correct?",
+          "responseKey": "doorJambReveals"
+        },
+        {
+          "id": "sliders-installed",
+          "label": "Are the Sliders Installed?",
+          "responseKey": "slidersInstalled"
+        },
+        {
+          "id": "frame-to-fascia",
+          "label": "Is the Frame to Facia Correct for the Batten and Hebel to get behind?",
+          "responseKey": "frameToFacia"
+        }
+      ]
+    },
+    {
+      "id": "framing",
+      "title": "Framing",
+      "questions": [
+        {
+          "id": "additional-framing",
+          "label": "Is there more framing required?",
+          "responseKey": "additionalFraming"
+        }
+      ]
+    }
+  ]
+}

@@ -24,7 +24,7 @@
         {{/if}}
       </div>
       <div class="cover-mid">
-        <span class="pill">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}SITE CHECK 1 REPORT{{/if}}</span>
+        <span class="pill">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}SITE INSPECTION REPORT{{/if}}</span>
         <h1 class="cover-name">{{metadata.reportTitle}}</h1>
         <div class="cover-sub">{{metadata.reportType}}</div>
       </div>
@@ -32,7 +32,7 @@
         <div class="cc"><div class="cc-l">PROPERTY ADDRESS</div><div class="cc-v">{{#if metadata.property.fullAddress}}{{metadata.property.fullAddress}}{{else}}N/A{{/if}}</div></div>
         <div class="cc"><div class="cc-l">BUILDER</div><div class="cc-v">{{#if metadata.builder}}{{metadata.builder}}{{else}}N/A{{/if}}</div></div>
         <div class="cc"><div class="cc-l">CHECK DATE</div><div class="cc-v">{{formattedDate}}</div></div>
-        <div class="cc"><div class="cc-l">SITE CHECK REFERENCE</div><div class="cc-v">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}HSC1 - Check 1{{/if}}</div></div>
+        <div class="cc"><div class="cc-l">SITE CHECK REFERENCE</div><div class="cc-v">{{#if metadata.siteChecksCompleted}}{{metadata.siteChecksCompleted}}{{else}}N/A{{/if}}</div></div>
         <div class="cc"><div class="cc-l">REPORT ID</div><div class="cc-v">{{metadata.reportId}}</div></div>
         <div class="cc"><div class="cc-l">SITE INSPECTOR</div><div class="cc-v">{{#if metadata.inspector.name}}{{metadata.inspector.name}}{{else}}Site Inspector{{/if}}</div></div>
       </div>
