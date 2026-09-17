@@ -105,13 +105,11 @@ export class ReportDataService {
         const status = StatusNormaliserService.normalise(rawAns);
 
         // Stats counter
+        // The dashboard's "COMPLETED" tile is a single non-issue bucket: any
+        // answer that isn't flagged as needing attention or cannot-install
+        // counts toward it (Completed, Complete, Correct, Not Required,
+        // Ordered, or plain informational answers), regardless of report type.
         switch (status.category) {
-          case "completed":
-            completedCount++;
-            break;
-          case "correct":
-            correctCount++;
-            break;
           case "attention":
           case "partially_completed":
             attentionCount++;
@@ -119,11 +117,14 @@ export class ReportDataService {
           case "cannot_install":
             cannotInstallCount++;
             break;
-          case "not_required":
-            notRequiredCount++;
+          case "unknown":
+            // Not answered — excluded from every bucket
             break;
-          case "ordered":
-            orderedCount++;
+          default:
+            completedCount++;
+            if (status.category === "correct") correctCount++;
+            else if (status.category === "not_required") notRequiredCount++;
+            else if (status.category === "ordered") orderedCount++;
             break;
         }
 

@@ -36,33 +36,7 @@ export class StatusNormaliserService {
     const trimmed = rawAnswer.trim();
     const lower = trimmed.toLowerCase();
 
-    // 1. Completed
-    if (lower === "completed" || lower === "yes" || lower === "done" || lower.includes("100%")) {
-      return {
-        rawAnswer: trimmed,
-        category: "completed",
-        displayLabel: "Completed",
-        icon: "✓",
-        badgeClass: "badge b-done",
-        isCompliant: true,
-        requiresAction: false,
-      };
-    }
-
-    // 2. Correct
-    if (lower === "correct" || lower === "pass" || lower === "ok" || lower === "good") {
-      return {
-        rawAnswer: trimmed,
-        category: "correct",
-        displayLabel: "Correct",
-        icon: "✓",
-        badgeClass: "badge b-done",
-        isCompliant: true,
-        requiresAction: false,
-      };
-    }
-
-    // 3. Cannot Install / Failed / Urgent Blocker
+    // 1. Cannot Install / Failed / Urgent Blocker (checked first: highest severity)
     if (
       lower.includes("cannot install") ||
       lower.includes("failed") ||
@@ -80,32 +54,16 @@ export class StatusNormaliserService {
       };
     }
 
-    // 4. Not Required / N/A
-    if (
-      lower === "not required" ||
-      lower === "n/a" ||
-      lower === "none" ||
-      lower === "no" ||
-      lower.includes("0x pier")
-    ) {
-      return {
-        rawAnswer: trimmed,
-        category: "not_required",
-        displayLabel: trimmed,
-        icon: "—",
-        badgeClass: "badge b-na",
-        isCompliant: true,
-        requiresAction: false,
-      };
-    }
-
-    // 5. Partially Completed / Attention Required
+    // 2. Partially Completed / Attention Required / negative modifiers
+    // (checked before the positive "complete"/"correct" matches below, so
+    // phrases like "Not Complete" or "Incorrect" are never misread as positive)
     if (
       lower.includes("partially") ||
       lower.includes("partial") ||
       lower.includes("fix") ||
       lower.includes("attention") ||
       lower.includes("incomplete") ||
+      lower.includes("incorrect") ||
       lower.includes("repair") ||
       lower.includes("not complete") ||
       lower.includes("not correct") ||
@@ -124,6 +82,52 @@ export class StatusNormaliserService {
       };
     }
 
+    // 3. Not Required / N/A
+    if (
+      lower === "not required" ||
+      lower === "n/a" ||
+      lower === "none" ||
+      lower === "no" ||
+      lower.includes("0x pier")
+    ) {
+      return {
+        rawAnswer: trimmed,
+        category: "not_required",
+        displayLabel: trimmed,
+        icon: "—",
+        badgeClass: "badge b-na",
+        isCompliant: true,
+        requiresAction: false,
+      };
+    }
+
+    // 4. Completed — matches "Completed", "Complete", "100% Complete", etc.
+    // for any report type, since negative phrasing was already ruled out above.
+    if (lower.includes("complete") || lower === "yes" || lower === "done" || lower.includes("100%")) {
+      return {
+        rawAnswer: trimmed,
+        category: "completed",
+        displayLabel: trimmed,
+        icon: "✓",
+        badgeClass: "badge b-done",
+        isCompliant: true,
+        requiresAction: false,
+      };
+    }
+
+    // 5. Correct — matches "Correct", "Correct (<250mm)", etc.
+    if (lower.includes("correct") || lower === "pass" || lower === "ok" || lower === "good") {
+      return {
+        rawAnswer: trimmed,
+        category: "correct",
+        displayLabel: trimmed,
+        icon: "✓",
+        badgeClass: "badge b-done",
+        isCompliant: true,
+        requiresAction: false,
+      };
+    }
+
     // 6. Ordered / Pending Delivery
     if (lower.includes("ordered") || lower.includes("pending")) {
       return {
@@ -137,7 +141,8 @@ export class StatusNormaliserService {
       };
     }
 
-    // 7. Informational / Descriptive
+    // 7. Informational / Descriptive — e.g. "Power On-site", "Half Full".
+    // Not flagged as an issue, so it still counts as a non-issue answer.
     return {
       rawAnswer: trimmed,
       category: "informational",
