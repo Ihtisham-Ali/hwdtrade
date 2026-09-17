@@ -139,6 +139,7 @@
       {{#each this.sections}}
       <div class="section">
         <div class="sec-head">{{this.title}}</div>
+        {{#if this.description}}<div class="sec-desc">{{this.description}}</div>{{/if}}
         <div class="sec-body">
           {{#each this.questions}}
           {{#if this.isNote}}
@@ -148,7 +149,7 @@
           </div>
           {{else}}
           <div class="row">
-            <div class="q">{{this.label}}</div>
+            <div class="q">{{this.label}}{{#if this.description}}<div class="q-desc">{{this.description}}</div>{{/if}}</div>
             <div class="a">
               <span class="{{this.status.badgeClass}}">
                 {{#if this.status.icon}}<span class="ic">{{this.status.icon}}</span>{{/if}}

@@ -9,6 +9,7 @@ import { DEFAULT_HWD_LOGO_DATA_URI } from "../config/default-logo.js";
 export interface QuestionViewModel {
   id: string;
   label: string;
+  description?: string;
   responseKey: string;
   rawResponse: string;
   status: NormalisedStatus;
@@ -153,6 +154,7 @@ export class ReportDataService {
         questionVMs.push({
           id: q.id,
           label: q.label,
+          description: q.description,
           responseKey: q.responseKey,
           rawResponse: status.displayLabel,
           status,

@@ -27,8 +27,8 @@
         { "id": "lower-blueboard-notes", "label": "Blueboard Notes", "responseKey": "lowerBlueboardNotes", "type": "notes", "isFullWidth": true },
         { "id": "scaffold-removed", "label": "Scaffold Removed", "responseKey": "scaffoldRemoved" },
         { "id": "scaffold-notes", "label": "Scaffold Notes", "responseKey": "scaffoldNotes", "type": "notes", "isFullWidth": true },
-        { "id": "render-to-tiled-slabs", "label": "Render to Tiled Slabs", "responseKey": "renderToTiledSlabs" },
-        { "id": "render-to-tiled-slabs-required", "label": "Is Render to Tiled Slabs required?", "responseKey": "renderToTiledSlabsRequired" }
+        { "id": "render-to-tiled-slabs", "label": "Render to Tiled Slabs", "description": "Is Render to Tiled Slabs required?", "responseKey": "renderToTiledSlabs" },
+        { "id": "render-to-tiled-slabs-notes", "label": "Notes", "responseKey": "renderToTiledSlabsNotes", "type": "notes", "isFullWidth": true }
       ]
     }
   ]
