@@ -1,0 +1,53 @@
+{
+  "templateId": "RSC4",
+  "title": "Post Lower Render Check - Site Check 4",
+  "version": "1.0.0",
+  "description": "Standard Render Site Check 4 inspection template for Post Lower Render Check",
+  "sections": [
+    {
+      "id": "render-installation",
+      "title": "Render Installation",
+      "questions": [
+        { "id": "render-complete", "label": "Render Complete", "responseKey": "renderComplete" },
+        { "id": "doors-cj", "label": "Doors CJ", "responseKey": "doorsCj" },
+        { "id": "garage-cj", "label": "Garage CJ", "responseKey": "garageCj" },
+        { "id": "window-cj", "label": "Window CJ", "responseKey": "windowCj" },
+        { "id": "wall-cj", "label": "Wall CJ", "responseKey": "wallCj" },
+        { "id": "pier-slabs", "label": "Pier Slabs", "responseKey": "pierSlabs" },
+        { "id": "slab-depth-150mm", "label": "150mm Slab Depth", "responseKey": "slabDepth150mm" },
+        { "id": "corner-cj-80mm", "label": "80mm Corner CJ", "responseKey": "cornerCj80mm" }
+      ]
+    },
+    {
+      "id": "cleaning-of-site",
+      "title": "Cleaning of Site",
+      "questions": [
+        { "id": "doors-clean", "label": "Doors Cleans", "responseKey": "doorsClean" },
+        { "id": "windows-clean", "label": "Windows Clean", "responseKey": "windowsClean" },
+        { "id": "facia-gutter-clean", "label": "Facia/Gutter Clean", "responseKey": "faciaGutterClean" },
+        { "id": "concrete-clean", "label": "Concrete Clean", "responseKey": "concreteClean" },
+        { "id": "garage-clean", "label": "Garage Clean", "responseKey": "garageClean" },
+        { "id": "fence-retaining-wall-clean", "label": "Fence and Retaining Wall Clean", "responseKey": "fenceRetainingWallClean" },
+        { "id": "cleaning-notes", "label": "Cleaning Notes", "responseKey": "cleaningNotes", "type": "notes", "isFullWidth": true }
+      ]
+    },
+    {
+      "id": "quality-of-job",
+      "title": "Quality of Job",
+      "questions": [
+        { "id": "job-quality", "label": "Job Quality", "responseKey": "jobQuality" },
+        { "id": "return-to-site", "label": "Return to Site", "responseKey": "returnToSite" }
+      ]
+    },
+    {
+      "id": "action-items",
+      "title": "Action Items",
+      "questions": [
+        { "id": "supervisor", "label": "Supervisor", "responseKey": "supervisorActionRequired" },
+        { "id": "supervisor-notes", "label": "Supervisor Notes", "responseKey": "supervisorNotes", "type": "notes", "isFullWidth": true },
+        { "id": "subcontractor", "label": "Subcontractor", "responseKey": "subcontractorActionRequired" },
+        { "id": "subcontractor-notes", "label": "Subcontractor Notes", "responseKey": "subcontractorNotes", "type": "notes", "isFullWidth": true }
+      ]
+    }
+  ]
+}

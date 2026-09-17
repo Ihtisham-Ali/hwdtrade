@@ -1,0 +1,39 @@
+{
+  "templateId": "RSC2",
+  "title": "Post Upper Render Check - Site Check 2",
+  "version": "1.0.0",
+  "description": "Standard Render Site Check 2 inspection template for Post Upper Render Check",
+  "sections": [
+    {
+      "id": "render-installation",
+      "title": "Render Installation",
+      "questions": [
+        { "id": "render-complete", "label": "Render Complete", "responseKey": "renderComplete" },
+        { "id": "doors-cj", "label": "Doors CJ", "responseKey": "doorsCj" },
+        { "id": "window-cj", "label": "Window CJ", "responseKey": "windowCj" },
+        { "id": "wall-cj", "label": "Wall CJ", "responseKey": "wallCj" },
+        { "id": "corner-cj-80mm", "label": "80mm Corner CJ", "responseKey": "cornerCj80mm" }
+      ]
+    },
+    {
+      "id": "cleaning-of-site",
+      "title": "Cleaning of Site",
+      "questions": [
+        { "id": "doors-clean", "label": "Doors Clean", "responseKey": "doorsClean" },
+        { "id": "windows-clean", "label": "Windows Clean", "responseKey": "windowsClean" },
+        { "id": "facia-gutter-clean", "label": "Facia/Gutter Clean", "responseKey": "faciaGutterClean" },
+        { "id": "balcony-clean", "label": "Balcony Clean", "responseKey": "balconyClean" },
+        { "id": "roof-clean", "label": "Roof Clean", "responseKey": "roofClean" },
+        { "id": "garage-clean", "label": "Garage Clean", "responseKey": "garageClean" }
+      ]
+    },
+    {
+      "id": "quality-of-job",
+      "title": "Quality of Job",
+      "questions": [
+        { "id": "job-quality", "label": "Job Quality", "responseKey": "jobQuality" },
+        { "id": "return-to-site", "label": "Return to Site", "responseKey": "returnToSite" }
+      ]
+    }
+  ]
+}

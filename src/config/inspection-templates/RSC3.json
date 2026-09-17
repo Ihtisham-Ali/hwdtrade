@@ -1,0 +1,35 @@
+{
+  "templateId": "RSC3",
+  "title": "Pre Lower Render Application - Site Check 3",
+  "version": "1.0.0",
+  "description": "Standard Render Site Check 3 inspection template for Pre Lower Render Application",
+  "sections": [
+    {
+      "id": "areas-for-hebel-installer",
+      "title": "Areas for Hebel Installer",
+      "description": "Send to Hebel Installer if not completed",
+      "questions": [
+        { "id": "slab-overhang", "label": "Slab Overhang", "responseKey": "slabOverhang" },
+        { "id": "soil-height", "label": "Soil Height", "responseKey": "soilHeight" },
+        { "id": "lower-hebel-installation", "label": "Lower Hebel Installation", "responseKey": "lowerHebelInstallation" },
+        { "id": "lower-hebel-installation-notes", "label": "Notes", "responseKey": "lowerHebelInstallationNotes", "type": "notes", "isFullWidth": true }
+      ]
+    },
+    {
+      "id": "areas-for-supervisor",
+      "title": "Areas to Send to the Supervisor",
+      "questions": [
+        { "id": "lower-cladding-completed", "label": "Lower Cladding Completed", "responseKey": "lowerCladdingCompleted" },
+        { "id": "lower-cladding-notes", "label": "Cladding Notes", "responseKey": "lowerCladdingNotes", "type": "notes", "isFullWidth": true },
+        { "id": "lower-soffits-completed", "label": "Lower Soffits Completed", "responseKey": "lowerSoffitsCompleted" },
+        { "id": "lower-soffits-notes", "label": "Soffits Notes", "responseKey": "lowerSoffitsNotes", "type": "notes", "isFullWidth": true },
+        { "id": "lower-blueboard-completed", "label": "Lower Blueboard Completed", "responseKey": "lowerBlueboardCompleted" },
+        { "id": "lower-blueboard-notes", "label": "Blueboard Notes", "responseKey": "lowerBlueboardNotes", "type": "notes", "isFullWidth": true },
+        { "id": "scaffold-removed", "label": "Scaffold Removed", "responseKey": "scaffoldRemoved" },
+        { "id": "scaffold-notes", "label": "Scaffold Notes", "responseKey": "scaffoldNotes", "type": "notes", "isFullWidth": true },
+        { "id": "render-to-tiled-slabs", "label": "Render to Tiled Slabs", "responseKey": "renderToTiledSlabs" },
+        { "id": "render-to-tiled-slabs-required", "label": "Is Render to Tiled Slabs required?", "responseKey": "renderToTiledSlabsRequired" }
+      ]
+    }
+  ]
+}
