@@ -152,6 +152,18 @@ export class MultipartService {
             }
           }
         }
+      } else if (Array.isArray(metadata.base64Images) && metadata.base64Images.length > 0) {
+        // base64Images sent as a genuine JSON array (each element may itself be a
+        // JSON-stringified object, e.g. Make.com's array-of-URL-rows shape)
+        console.log(`[ImageExtract] base64Images is array, length=${metadata.base64Images.length}`);
+        for (let i = 0; i < metadata.base64Images.length; i++) {
+          const extracted = await MultipartService.extractImageFromItem(metadata.base64Images[i], i);
+          if (extracted) {
+            images.push(extracted.filePart);
+            if (!metadata.imageMetadata) metadata.imageMetadata = [];
+            metadata.imageMetadata.push(extracted.meta);
+          }
+        }
       }
 
       console.log(`[ImageExtract] Total images: ${images.length}`);
@@ -320,6 +332,20 @@ export class MultipartService {
 
   public static async extractImageFromItem(item: any, index: number): Promise<{ filePart: UploadedFilePart; meta: { fileName: string; caption?: string; section?: string; sequence?: number } } | null> {
     if (!item) return null;
+
+    // Unwrap JSON-stringified objects, e.g. '{"name":"url","value":"https://..."}'
+    // (Make.com often emits array elements as individually-stringified rows)
+    if (typeof item === "string") {
+      const trimmedItem = item.trim();
+      if (trimmedItem.startsWith("{") || trimmedItem.startsWith("[")) {
+        try {
+          item = JSON.parse(trimmedItem);
+        } catch (e) {
+          // Not valid JSON — leave as-is, may be a raw URL/base64/hex string
+        }
+      }
+    }
+
     let fileName = `photo-${index + 1}.jpg`;
     let caption: string | undefined = undefined;
     let section: string | undefined = undefined;
