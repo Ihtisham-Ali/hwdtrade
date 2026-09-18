@@ -5,14 +5,6 @@
   "description": "Standard Site Check 4 inspection template for Post Lower Hebel Check",
   "sections": [
     {
-      "id": "alert-supervisor",
-      "title": "Alert Supervisor",
-      "questions": [
-        { "id": "soil-height", "label": "Soil Height", "responseKey": "soilHeight" },
-        { "id": "slab-overhanging", "label": "Slab Overhanging", "responseKey": "slabOverhanging" }
-      ]
-    },
-    {
       "id": "hebel-installation",
       "title": "Hebel Installation",
       "questions": [

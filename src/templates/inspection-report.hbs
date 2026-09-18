@@ -85,25 +85,6 @@
         <div class="oc-right">{{stats.recommendedAction}}</div>
       </div>
 
-      {{#if metadata.options.includeOutstandingItems}}
-      {{#if outstandingItems.length}}
-      <div class="h2"><span class="h2-bar"></span>OUTSTANDING ITEMS SUMMARY ({{outstandingItems.length}})</div>
-      {{#each summaryOutstandingItems}}
-      <div class="oi">
-        <div class="oi-head">
-          <span class="oi-num">ITEM {{this.itemNumber}}</span>
-          <span class="oi-cat">{{this.sectionTitle}}</span>
-        </div>
-        <div class="oi-title">{{this.questionLabel}}</div>
-        <div class="oi-flag {{#if this.isCrit}}crit{{/if}}">
-          <span class="ic">{{this.status.icon}}</span>{{this.status.displayLabel}}
-        </div>
-        <div class="oi-action">REQUIRED ACTION: {{this.requiredAction}}</div>
-      </div>
-      {{/each}}
-      {{/if}}
-      {{/if}}
-
       {{#if generalNotesList.length}}
       <div class="section">
         <div class="sec-head">GENERAL INSPECTION NOTES &amp; COMMENTS</div>
