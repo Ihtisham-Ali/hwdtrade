@@ -69,7 +69,8 @@ export class StatusNormaliserService {
       lower.includes("not correct") ||
       lower.includes("working on it") ||
       lower.includes("wrong for") ||
-      lower.includes("needs to be")
+      lower.includes("needs to be") ||
+      lower.includes("no power")
     ) {
       return {
         rawAnswer: trimmed,

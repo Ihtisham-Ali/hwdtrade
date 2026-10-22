@@ -53,6 +53,12 @@ async function runTests() {
   const s3 = StatusNormaliserService.normalise("Cannot Install");
   assert(s3.category === "cannot_install" && s3.requiresAction, "StatusNormaliser - 'Cannot Install' requires action");
 
+  const s4 = StatusNormaliserService.normalise("No Power");
+  assert(
+    s4.category === "attention" && s4.requiresAction && s4.badgeClass === "badge b-attn" && !s4.isCompliant,
+    "StatusNormaliser - 'No Power' requires attention and marked with red badge"
+  );
+
   // Test 4: Sharp Image Processing
   try {
     const svg = `<svg width="800" height="600"><rect width="100%" height="100%" fill="#0F172A"/></svg>`;
@@ -72,7 +78,7 @@ async function runTests() {
       templateId: "lower-hebel-site-check-1",
       property: { fullAddress: "456 Sample Rd, Sydney" },
       responses: {
-        powerInstalled: "Completed",
+        powerInstalled: "No Power",
         sarkingInstalled: "Partially Completed",
         zeroBoundaryInstallation: "Cannot Install"
       }
@@ -80,10 +86,10 @@ async function runTests() {
     const tpl = TemplateLoader.getTemplate("lower-hebel-site-check-1");
     const vm = ReportDataService.buildViewModel(meta, tpl, []);
 
-    assert(vm.stats.completedCount === 1, "ReportDataService - Correct completed count");
-    assert(vm.stats.attentionCount === 1, "ReportDataService - Correct attention count");
+    assert(vm.stats.completedCount === 0, "ReportDataService - Correct completed count (0 completed checks)");
+    assert(vm.stats.attentionCount === 2, "ReportDataService - Correct attention count (2 attention items including No Power)");
     assert(vm.stats.cannotInstallCount === 1, "ReportDataService - Correct cannot install count");
-    assert(vm.outstandingItems.length === 2, "ReportDataService - Correct outstanding items count (2 action items)");
+    assert(vm.outstandingItems.length === 3, "ReportDataService - Correct outstanding items count (3 action items including No Power)");
   } catch (e: any) {
     assert(false, `ReportDataService - ${e.message}`);
   }
