@@ -44,7 +44,7 @@ async function main() {
       fullAddress: "Lot 100, 162 Current Street"
     },
     inspector: {
-      name: "Site Inspector",
+      name: "Site Supervisor",
       company: "HWD Trade"
     },
     branding: {

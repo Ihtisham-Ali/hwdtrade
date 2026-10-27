@@ -9,7 +9,7 @@ export const PropertySchema = z.object({
 });
 
 export const InspectorSchema = z.object({
-  name: z.string().nullish().transform(val => val || "Site Inspector"),
+  name: z.string().nullish().transform(val => val || "Site Supervisor"),
   company: z.string().nullish().transform(val => val || "HWD Trade"),
 });
 
@@ -79,7 +79,8 @@ export const InspectionMetadataSchema = z.object({
   checkDate: z.string().nullish().transform(val => val || new Date().toLocaleDateString("en-AU")),
   siteChecksCompleted: z.string().nullish().transform(val => val || ""),
   property: PropertySchema.optional().default({ fullAddress: "N/A" }),
-  inspector: InspectorSchema.optional().default({ name: "Site Inspector", company: "HWD Trade" }),
+  inspector: InspectorSchema.optional(),
+  supervisor: InspectorSchema.optional(),
   branding: BrandingSchema.optional().default({
     companyName: "HWD Trade",
     primaryColour: "#0F172A",
@@ -101,6 +102,13 @@ export const InspectionMetadataSchema = z.object({
     maximumPdfSizeMb: 20
   }),
   sourceMetadata: SourceMetadataSchema.optional(),
+}).transform(data => {
+  const supervisorData = data.supervisor || data.inspector || { name: "Site Supervisor", company: "HWD Trade" };
+  return {
+    ...data,
+    inspector: supervisorData,
+    supervisor: supervisorData,
+  };
 });
 
 export type InspectionMetadata = z.infer<typeof InspectionMetadataSchema>;

@@ -65,7 +65,7 @@ async function capturePreviews() {
       fullAddress: "Test Ali",
     },
     inspector: {
-      name: "Site Inspector",
+      name: "Site Supervisor",
       company: "HWD Trade",
     },
     branding: {

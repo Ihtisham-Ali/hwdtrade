@@ -49,7 +49,7 @@ async function main() {
       fullAddress: "Lot 4106 Heathcote Circuit, REDLAND BAY 4165"
     },
     inspector: {
-      name: "Inspector Name",
+      name: "Supervisor Name",
       company: "HWD Trade"
     },
     branding: {

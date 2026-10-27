@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { InspectionMetadata } from "../schemas/inspection.schema.js";
 import { InspectionTemplateConfig } from "../schemas/template.schema.js";
-import { NormalisedStatus, StatusNormaliserService } from "./status-normaliser.service.js";
+import { NormalisedStatus, StatusNormaliserService, detectReportKey } from "./status-normaliser.service.js";
 import { ProcessedImage } from "./image-processing.service.js";
 import { DEFAULT_HWD_LOGO_DATA_URI } from "../config/default-logo.js";
 
@@ -38,16 +38,22 @@ export interface OutstandingItemViewModel {
 export interface SummaryStatsViewModel {
   totalChecks: number;
   completedCount: number;
-  correctCount: number;
+  inProgressCount: number;
   attentionCount: number;
   cannotInstallCount: number;
+  correctCount: number;
   notRequiredCount: number;
   orderedCount: number;
   totalPhotos: number;
-  overallStatus: "COMPLIANT" | "ATTENTION REQUIRED" | "ACTION REQUIRED";
+  overallStatus: "COMPLIANT" | "IN PROGRESS" | "ATTENTION REQUIRED" | "ACTION REQUIRED";
   overallStatusClass: string;
+  overallStatusCoverClass: string;
   recommendedAction: string;
   isCompliant: boolean;
+  hasAttention: boolean;
+  hasInProgress: boolean;
+  attentionActionText: string;
+  inProgressActionText: string;
 }
 
 export interface DetailPageViewModel {
@@ -87,11 +93,19 @@ export class ReportDataService {
     const sections: SectionViewModel[] = [];
     const outstandingItems: OutstandingItemViewModel[] = [];
 
+    const reportKey = detectReportKey(
+      template.templateId,
+      metadata.reportId,
+      metadata.siteChecksCompleted,
+      metadata.reportTitle
+    );
+
     let totalChecks = 0;
     let completedCount = 0;
-    let correctCount = 0;
+    let inProgressCount = 0;
     let attentionCount = 0;
     let cannotInstallCount = 0;
+    let correctCount = 0;
     let notRequiredCount = 0;
     let orderedCount = 0;
 
@@ -103,30 +117,21 @@ export class ReportDataService {
       for (const q of sec.questions) {
         totalChecks++;
         const rawAns = responses[q.responseKey];
-        const status = StatusNormaliserService.normalise(rawAns);
+        const status = StatusNormaliserService.normalise(rawAns, reportKey);
 
-        // Stats counter
-        // The dashboard's "COMPLETED" tile is a single non-issue bucket: any
-        // answer that isn't flagged as needing attention or cannot-install
-        // counts toward it (Completed, Complete, Correct, Not Required,
-        // Ordered, or plain informational answers), regardless of report type.
-        switch (status.category) {
-          case "attention":
-          case "partially_completed":
-            attentionCount++;
-            break;
-          case "cannot_install":
+        // Stats counters: Green is Completed, Yellow is In Progress, Red is Attention Required
+        if (status.color === "green") {
+          completedCount++;
+          if (status.category === "correct") correctCount++;
+          else if (status.category === "not_required") notRequiredCount++;
+          else if (status.category === "ordered") orderedCount++;
+        } else if (status.color === "yellow") {
+          inProgressCount++;
+        } else if (status.color === "red") {
+          attentionCount++;
+          if (status.category === "cannot_install") {
             cannotInstallCount++;
-            break;
-          case "unknown":
-            // Not answered — excluded from every bucket
-            break;
-          default:
-            completedCount++;
-            if (status.category === "correct") correctCount++;
-            else if (status.category === "not_required") notRequiredCount++;
-            else if (status.category === "ordered") orderedCount++;
-            break;
+          }
         }
 
         // Outstanding item check
@@ -172,37 +177,50 @@ export class ReportDataService {
       });
     }
 
-    // Overall Status
-    let overallStatus: "COMPLIANT" | "ATTENTION REQUIRED" | "ACTION REQUIRED" = "COMPLIANT";
-    let overallStatusClass = "status-success";
-    let recommendedAction = "Site is compliant. Proceed to next construction phase.";
-    let isCompliant = true;
+    // Overall Status Logic
+    const hasAttention = attentionCount > 0;
+    const hasInProgress = inProgressCount > 0;
+    const isCompliant = !hasAttention && !hasInProgress;
 
-    if (cannotInstallCount > 0) {
-      overallStatus = "ACTION REQUIRED";
+    const attentionActionText = "Critical or non-compliant items identified. Rectify before scheduling next site check.";
+    const inProgressActionText = "Inspection items are currently in progress. Complete prior to final sign-off.";
+
+    let overallStatus: "COMPLIANT" | "IN PROGRESS" | "ATTENTION REQUIRED" | "ACTION REQUIRED" = "COMPLIANT";
+    let overallStatusClass = "status-success";
+    let overallStatusCoverClass = "status-green";
+    let recommendedAction = "Site is compliant. Proceed to next construction phase.";
+
+    if (hasAttention) {
+      overallStatus = cannotInstallCount > 0 ? "ACTION REQUIRED" : "ATTENTION REQUIRED";
       overallStatusClass = "status-danger";
-      recommendedAction = "Critical installation blockers identified. Complete outstanding actions immediately.";
-      isCompliant = false;
-    } else if (attentionCount > 0) {
-      overallStatus = "ATTENTION REQUIRED";
+      overallStatusCoverClass = "status-red";
+      recommendedAction = attentionActionText;
+    } else if (hasInProgress) {
+      overallStatus = "IN PROGRESS";
       overallStatusClass = "status-warning";
-      recommendedAction = "Minor non-compliant items identified. Rectify before scheduling next site check.";
-      isCompliant = false;
+      overallStatusCoverClass = "status-yellow";
+      recommendedAction = inProgressActionText;
     }
 
     const stats: SummaryStatsViewModel = {
       totalChecks,
       completedCount,
-      correctCount,
+      inProgressCount,
       attentionCount,
       cannotInstallCount,
+      correctCount,
       notRequiredCount,
       orderedCount,
       totalPhotos: processedImages.length,
       overallStatus,
       overallStatusClass,
+      overallStatusCoverClass,
       recommendedAction,
       isCompliant,
+      hasAttention,
+      hasInProgress,
+      attentionActionText,
+      inProgressActionText,
     };
 
     // Cover Background Flat: Default flat cover background

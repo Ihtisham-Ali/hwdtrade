@@ -96,7 +96,7 @@ def build(data, logo):
             ("CHECK DATE", m["check_date"]),
             ("SITE CHECK REFERENCE", m["site_check_reference"]),
             ("REPORT ID", m["id"]),
-            ("INSPECTOR", m["inspector"]),
+            ("SITE SUPERVISOR", m.get("supervisor") or m.get("inspector") or "Site Supervisor"),
         ]
     )
     pages.append(f'''<section class="page cover">

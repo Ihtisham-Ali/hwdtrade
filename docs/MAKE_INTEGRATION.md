@@ -104,7 +104,7 @@ Monday.com Item Trigger
       "fullAddress": "{{1.address_column}}"
     },
     "inspector": {
-      "name": "Site Inspector",
+      "name": "Site Supervisor",
       "company": "Wilkinson Planning"
     },
     "responses": {

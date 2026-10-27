@@ -43,21 +43,65 @@ async function runTests() {
     assert(false, `TemplateLoader - ${e.message}`);
   }
 
-  // Test 3: Status Normaliser
-  const s1 = StatusNormaliserService.normalise("Completed");
-  assert(s1.category === "completed" && s1.isCompliant, "StatusNormaliser - 'Completed' is compliant");
+  // Test 3: Status Normaliser (HSC1 & HSC4)
+  const s1 = StatusNormaliserService.normalise("Completed", "HSC1");
+  assert(s1.category === "completed" && s1.color === "green" && s1.isCompliant, "StatusNormaliser - HSC1 'Completed' is green/compliant");
 
-  const s2 = StatusNormaliserService.normalise("Partially Completed");
-  assert(s2.category === "attention" && s2.requiresAction, "StatusNormaliser - 'Partially Completed' requires action");
+  const s2 = StatusNormaliserService.normalise("Partially Completed", "HSC1");
+  assert(s2.category === "in_progress" && s2.color === "yellow" && !s2.requiresAction, "StatusNormaliser - HSC1 'Partially Completed' is yellow/in progress");
 
-  const s3 = StatusNormaliserService.normalise("Cannot Install");
-  assert(s3.category === "cannot_install" && s3.requiresAction, "StatusNormaliser - 'Cannot Install' requires action");
+  const s3 = StatusNormaliserService.normalise("Cannot Install", "HSC1");
+  assert(s3.category === "cannot_install" && s3.color === "red" && s3.requiresAction, "StatusNormaliser - HSC1 'Cannot Install' is red/requires action");
 
-  const s4 = StatusNormaliserService.normalise("No Power");
+  const s4 = StatusNormaliserService.normalise("No Power", "HSC1");
   assert(
-    s4.category === "attention" && s4.requiresAction && s4.badgeClass === "badge b-attn" && !s4.isCompliant,
-    "StatusNormaliser - 'No Power' requires attention and marked with red badge"
+    s4.category === "attention" && s4.color === "red" && s4.requiresAction && s4.badgeClass.includes("b-red"),
+    "StatusNormaliser - HSC1 'No Power' is red/requires attention"
   );
+
+  const s5_hsc4 = StatusNormaliserService.normalise("Good", "HSC4");
+  assert(s5_hsc4.color === "green", "StatusNormaliser - HSC4 'Good' is green");
+
+  const s6_hsc4 = StatusNormaliserService.normalise("Hole Cut to Big", "HSC4");
+  assert(s6_hsc4.color === "red", "StatusNormaliser - HSC4 'Hole Cut to Big' is red");
+
+  // HSC2 Tests
+  const hsc2_g = StatusNormaliserService.normalise("Power On-site", "HSC2");
+  assert(hsc2_g.color === "green", "StatusNormaliser - HSC2 'Power On-site' is green");
+  const hsc2_r = StatusNormaliserService.normalise("No Power On-site", "HSC2");
+  assert(hsc2_r.color === "red", "StatusNormaliser - HSC2 'No Power On-site' is red");
+  const hsc2_y = StatusNormaliserService.normalise("In Progress Notes", "HSC2");
+  assert(hsc2_y.color === "yellow", "StatusNormaliser - HSC2 other is yellow");
+
+  // HSC3 Tests
+  const hsc3_g = StatusNormaliserService.normalise("Hebel Cut Tight to Vent", "HSC3");
+  assert(hsc3_g.color === "green", "StatusNormaliser - HSC3 'Hebel Cut Tight to Vent' is green");
+  const hsc3_r = StatusNormaliserService.normalise("Bad", "HSC3");
+  assert(hsc3_r.color === "red", "StatusNormaliser - HSC3 'Bad' is red");
+
+  // RSC1 Tests
+  const rsc1_g = StatusNormaliserService.normalise("Correct (<250mm)", "RSC1");
+  assert(rsc1_g.color === "green", "StatusNormaliser - RSC1 'Correct (<250mm)' is green");
+  const rsc1_r = StatusNormaliserService.normalise("Needs Adjusting (<100mm)", "RSC1");
+  assert(rsc1_r.color === "red", "StatusNormaliser - RSC1 'Needs Adjusting (<100mm)' is red");
+
+  // RSC2 Tests
+  const rsc2_g = StatusNormaliserService.normalise("Good", "RSC2");
+  assert(rsc2_g.color === "green", "StatusNormaliser - RSC2 'Good' is green");
+  const rsc2_r = StatusNormaliserService.normalise("Stuck", "RSC2");
+  assert(rsc2_r.color === "red", "StatusNormaliser - RSC2 'Stuck' is red");
+
+  // RSC3 Tests
+  const rsc3_g = StatusNormaliserService.normalise("Plus 150mm", "RSC3");
+  assert(rsc3_g.color === "green", "StatusNormaliser - RSC3 'Plus 150mm' is green");
+  const rsc3_r = StatusNormaliserService.normalise("Need Chipping Back", "RSC3");
+  assert(rsc3_r.color === "red", "StatusNormaliser - RSC3 'Need Chipping Back' is red");
+
+  // RSC4 Tests
+  const rsc4_g = StatusNormaliserService.normalise("Done", "RSC4");
+  assert(rsc4_g.color === "green", "StatusNormaliser - RSC4 'Done' is green");
+  const rsc4_r = StatusNormaliserService.normalise("Stuck", "RSC4");
+  assert(rsc4_r.color === "red", "StatusNormaliser - RSC4 'Stuck' is red");
 
   // Test 4: Sharp Image Processing
   try {
@@ -74,7 +118,7 @@ async function runTests() {
   // Test 5: Report Data ViewModel Assembly & Stats Aggregation
   try {
     const meta = InspectionMetadataSchema.parse({
-      reportId: "TEST-200",
+      reportId: "HSC1-TEST-200",
       templateId: "lower-hebel-site-check-1",
       property: { fullAddress: "456 Sample Rd, Sydney" },
       responses: {
@@ -87,9 +131,10 @@ async function runTests() {
     const vm = ReportDataService.buildViewModel(meta, tpl, []);
 
     assert(vm.stats.completedCount === 0, "ReportDataService - Correct completed count (0 completed checks)");
-    assert(vm.stats.attentionCount === 2, "ReportDataService - Correct attention count (2 attention items including No Power)");
+    assert(vm.stats.inProgressCount === 33, "ReportDataService - Correct in-progress count (33 yellow/in-progress items)");
+    assert(vm.stats.attentionCount === 2, "ReportDataService - Correct attention count (2 red items: No Power, Cannot Install)");
     assert(vm.stats.cannotInstallCount === 1, "ReportDataService - Correct cannot install count");
-    assert(vm.outstandingItems.length === 3, "ReportDataService - Correct outstanding items count (3 action items including No Power)");
+    assert(vm.outstandingItems.length === 2, "ReportDataService - Correct outstanding items count (2 red action items)");
   } catch (e: any) {
     assert(false, `ReportDataService - ${e.message}`);
   }
