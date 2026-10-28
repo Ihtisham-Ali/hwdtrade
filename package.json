@@ -1,6 +1,6 @@
 {
   "name": "modern-site-inspection-pdf-generator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Production-ready PDF generator for Monday.com / Make.com site inspection reports",
   "main": "dist/server.js",
   "scripts": {
